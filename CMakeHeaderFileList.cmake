@@ -7,6 +7,7 @@
 
 set(HEADER_MISC
   Defines.h
+  Voxel.h
   )
 
 set (HEADER_COMMON

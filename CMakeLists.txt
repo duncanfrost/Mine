@@ -7,7 +7,7 @@ if(COMMAND cmake_policy)
     cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
-SET(PROJECT_NAME "OPENGL")
+SET(PROJECT_NAME "Mine")
 PROJECT(${PROJECT_NAME})
 SET (CMAKE_VERBOSE_MAKEFILE true)
 

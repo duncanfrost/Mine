@@ -6,6 +6,7 @@
 # If you add/remove a directory, modify here
 set(SRC_MISC
   Defines.cpp
+  Voxel.cpp
   )
 set (SRC_COMMON
   common/controls.cpp
