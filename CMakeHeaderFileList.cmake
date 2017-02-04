@@ -8,6 +8,7 @@
 set(HEADER_MISC
   Defines.h
   Voxel.h
+  World.h
   )
 
 set (HEADER_COMMON

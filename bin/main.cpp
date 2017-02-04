@@ -24,6 +24,7 @@ using namespace glm;
 #include "../src/common/tangentspace.hpp"
 
 #include "../src/Voxel.h"
+#include "../src/World.h"
 #include <iostream>
 
 
@@ -33,15 +34,15 @@ void APIENTRY DebugOutputCallback(GLenum source, GLenum type, GLuint id,
 	printf("OpenGL Debug Output message : ");
 
 	if(source == GL_DEBUG_SOURCE_API_ARB)					printf("Source : API; ");
-	else if(source == GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB)	printf("Source : WINDOW_SYSTEM; ");
+    else if(source == GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB)	    printf("Source : WINDOW_SYSTEM; ");
 	else if(source == GL_DEBUG_SOURCE_SHADER_COMPILER_ARB)	printf("Source : SHADER_COMPILER; ");
 	else if(source == GL_DEBUG_SOURCE_THIRD_PARTY_ARB)		printf("Source : THIRD_PARTY; ");
 	else if(source == GL_DEBUG_SOURCE_APPLICATION_ARB)		printf("Source : APPLICATION; ");
-	else if(source == GL_DEBUG_SOURCE_OTHER_ARB)			printf("Source : OTHER; ");
+    else if(source == GL_DEBUG_SOURCE_OTHER_ARB)			    printf("Source : OTHER; ");
 
 	if(type == GL_DEBUG_TYPE_ERROR_ARB)						printf("Type : ERROR; ");
 	else if(type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB)	printf("Type : DEPRECATED_BEHAVIOR; ");
-	else if(type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB)	printf("Type : UNDEFINED_BEHAVIOR; ");
+    else if(type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB)	    printf("Type : UNDEFINED_BEHAVIOR; ");
 	else if(type == GL_DEBUG_TYPE_PORTABILITY_ARB)			printf("Type : PORTABILITY; ");
 	else if(type == GL_DEBUG_TYPE_PERFORMANCE_ARB)			printf("Type : PERFORMANCE; ");
 	else if(type == GL_DEBUG_TYPE_OTHER_ARB)				printf("Type : OTHER; ");
@@ -148,9 +149,17 @@ int main( void )
 	// Read our .obj file
     Voxel v;
     v.Load(programID);
-    Voxel v1;
-    v1.Load(programID);
-    v1.SetTranslation(2,0,0);
+
+    World w;
+
+
+    for (unsigned int x = 0; x < w.width; x++)
+            for (unsigned int z = 0; z < w.depth; z++)
+            {
+                w.SetBlock(x,0,z);
+                w.SetBlock(x,9,z);
+            }
+
 
 
 	// Get a handle for our "LightPosition" uniform
@@ -203,9 +212,23 @@ int main( void )
 		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
 
 
+    int width = 10;
+    int height = 10;
+    int depth = 10;
 
-        v.Draw(ProjectionMatrix, ViewMatrix);
-        v1.Draw(ProjectionMatrix, ViewMatrix);
+    for (unsigned int x = 0; x < width; x++)
+        for (unsigned int y = 0; y < height; y++)
+            for (unsigned int z = 0; z < depth; z++)
+            {
+
+                int index = x + y*width + z*width*depth;
+                if (w.blockData[index]  == 1)
+                {
+                    v.SetTranslation(2*x,2*y,2*z);
+                    v.Draw(ProjectionMatrix, ViewMatrix);
+                }
+            }
+
 
 
 
