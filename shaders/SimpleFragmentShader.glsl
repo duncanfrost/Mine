@@ -6,8 +6,6 @@ in vec3 Position_worldspace;
 in vec3 EyeDirection_cameraspace;
 in vec3 LightDirection_cameraspace;
 
-in vec3 LightDirection_tangentspace;
-in vec3 EyeDirection_tangentspace;
 
 // Ouput data
 out vec4 color;
@@ -43,7 +41,7 @@ void main(){
     // Normal of the computed fragment, in camera space
     vec3 n = TextureNormal_tangentspace;
     // Direction of the light (from the fragment to the light)
-    vec3 l = normalize(LightDirection_tangentspace);
+    vec3 l = normalize(LightDirection_cameraspace);
     // Cosine of the angle between the normal and the light direction,
     // clamped above 0
     //  - light is at the vertical of the triangle -> 1
@@ -52,7 +50,7 @@ void main(){
     float cosTheta = clamp( dot( n,l ), 0,1 );
 
     // Eye vector (towards the camera)
-    vec3 E = normalize(EyeDirection_tangentspace);
+    vec3 E = normalize(EyeDirection_cameraspace);
     // Direction in which the triangle reflects the light
     vec3 R = reflect(-l,n);
     // Cosine of the angle between the Eye vector and the Reflect vector,

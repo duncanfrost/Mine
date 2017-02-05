@@ -13,9 +13,6 @@ out vec3 Position_worldspace;
 out vec3 EyeDirection_cameraspace;
 out vec3 LightDirection_cameraspace;
 
-out vec3 LightDirection_tangentspace;
-out vec3 EyeDirection_tangentspace;
-
 // Values that stay constant for the whole mesh.
 uniform mat4 MVP;
 uniform mat4 V;
@@ -53,10 +50,6 @@ void main(){
                              vertexBitangent_cameraspace,
                              vertexNormal_cameraspace
                              )); // You can use dot products instead of building this matrix and transposing it. See References for details.
-
-    LightDirection_tangentspace = TBN * LightDirection_cameraspace;
-    EyeDirection_tangentspace =  TBN * EyeDirection_cameraspace;
-
 
 }
 
