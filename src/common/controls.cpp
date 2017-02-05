@@ -56,11 +56,11 @@ void computeMatricesFromInputs(){
 
     verticalAngle   = verticalAngle + mouseSpeed * float( 768/2 - ypos );
 
-    if (verticalAngle >= 0.5)
-        verticalAngle = 0.5;
+    if (verticalAngle >= 1.5)
+        verticalAngle = 1.5;
 
-    if (verticalAngle <= -0.5)
-        verticalAngle = -0.5;
+    if (verticalAngle <= -1.5)
+        verticalAngle = -1.5;
 
 
 

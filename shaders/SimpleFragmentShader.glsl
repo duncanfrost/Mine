@@ -3,6 +3,7 @@
 // Interpolated values from the vertex shaders
 in vec2 UV;
 in vec3 Position_worldspace;
+in vec3 Normal_cameraspace;
 in vec3 EyeDirection_cameraspace;
 in vec3 LightDirection_cameraspace;
 
@@ -12,11 +13,8 @@ out vec4 color;
 
 // Values that stay constant for the whole mesh.
 uniform sampler2D DiffuseTextureSampler;
-uniform sampler2D NormalTextureSampler;
 uniform sampler2D SpecularTextureSampler;
-uniform mat4 V;
-uniform mat4 M;
-uniform mat3 MV3x3;
+uniform mat3 MV;
 uniform vec3 LightPosition_worldspace;
 
 void main(){
@@ -27,19 +25,17 @@ void main(){
     float LightPower = 60.0;
 
     // Material properties
-    vec3 MaterialDiffuseColor = texture( DiffuseTextureSampler, UV ).rgb;
-    float alpha = texture(DiffuseTextureSampler, UV).a;
-    vec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;
-    vec3 MaterialSpecularColor = texture( SpecularTextureSampler, UV ).rgb * 0.3;
 
-    // Local normal, in tangent space. V tex coordinate is inverted because normal map is in TGA (not in DDS) for better quality
-    vec3 TextureNormal_tangentspace = normalize(texture( NormalTextureSampler, vec2(UV.x,-UV.y) ).rgb*2.0 - 1.0);
+    float alpha = texture(DiffuseTextureSampler, UV).a;
+    vec3 MaterialDiffuseColor = texture( DiffuseTextureSampler, UV ).rgb;
+    vec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;
+    vec3 MaterialSpecularColor = vec3(0.3,0.3,0.3);
 
     // Distance to the light
     float distance = length( LightPosition_worldspace - Position_worldspace );
 
     // Normal of the computed fragment, in camera space
-    vec3 n = TextureNormal_tangentspace;
+    vec3 n = normalize(Normal_cameraspace);
     // Direction of the light (from the fragment to the light)
     vec3 l = normalize(LightDirection_cameraspace);
     // Cosine of the angle between the normal and the light direction,
@@ -67,6 +63,6 @@ void main(){
             // Specular : reflective highlight, like a mirror
             MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / (distance*distance);
 
-    color.rgb = MaterialDiffuseColor * LightColor;
+//    color.rgb = MaterialDiffuseColor * LightColor;
     color.a = alpha;
 }

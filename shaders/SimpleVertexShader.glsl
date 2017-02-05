@@ -12,6 +12,7 @@ out vec2 UV;
 out vec3 Position_worldspace;
 out vec3 EyeDirection_cameraspace;
 out vec3 LightDirection_cameraspace;
+out vec3 Normal_cameraspace;
 
 // Values that stay constant for the whole mesh.
 uniform mat4 MVP;
@@ -39,17 +40,6 @@ void main(){
 
     // UV of the vertex. No special space for this one.
     UV = vertexUV;
-
-    // model to camera = ModelView
-    vec3 vertexTangent_cameraspace = MV3x3 * vertexTangent_modelspace;
-    vec3 vertexBitangent_cameraspace = MV3x3 * vertexBitangent_modelspace;
-    vec3 vertexNormal_cameraspace = MV3x3 * vertexNormal_modelspace;
-
-    mat3 TBN = transpose(mat3(
-                             vertexTangent_cameraspace,
-                             vertexBitangent_cameraspace,
-                             vertexNormal_cameraspace
-                             )); // You can use dot products instead of building this matrix and transposing it. See References for details.
-
+    Normal_cameraspace = MV3x3 * vertexNormal_modelspace;
 }
 
