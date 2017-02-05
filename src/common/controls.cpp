@@ -37,6 +37,22 @@ int chunkNumber = 0;
 bool chunkFlip = false;
 
 
+int getChunkNumber()
+{
+    // Strafe left
+    if (glfwGetKey( window, GLFW_KEY_P ) == GLFW_PRESS){
+        chunkFlip = true;
+    }
+
+    // Strafe left
+    if (glfwGetKey( window, GLFW_KEY_P ) == GLFW_RELEASE && chunkFlip){
+        chunkFlip = false;
+        chunkNumber++;
+        std::cout << "Chunk number " << chunkNumber << std::endl;
+    }
+
+    return chunkNumber;
+}
 
 
 void computeMatricesFromInputs(){
@@ -110,17 +126,6 @@ void computeMatricesFromInputs(){
     else
         speed = 3;
 
-    // Strafe left
-    if (glfwGetKey( window, GLFW_KEY_P ) == GLFW_PRESS){
-        chunkFlip = true;
-    }
-
-    // Strafe left
-    if (glfwGetKey( window, GLFW_KEY_P ) == GLFW_RELEASE && chunkFlip){
-        chunkFlip = false;
-        chunkNumber++;
-        std::cout << "Chunk number " << chunkNumber << std::endl;
-    }
 
     float FoV = initialFoV;
     // - 5 * glfwGetMouseWheel(); // Now GLFW 3 requires

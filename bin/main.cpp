@@ -99,33 +99,30 @@ int main( void )
             heights = reader.get_heightmap_at(rx, rz);
 
             std::cout << "Got blocks at " << rx << "," << rz << std::endl;
+            int chunkIndex = rx + 32*rz;
+
+            for (unsigned int x = 0; x < w.width; x++)
+                for (unsigned int z = 0; z < w.breadth; z++)
+                    for (unsigned int y = 0; y < w.depth; y++)
+                    {
+                        int worldIndex = x + y*w.width + z*w.width*w.breadth;
+                        int minecraftIndex = (y * 16 + z) * 16 + x;
+
+                        if (minecraftIndex < blocks.size())
+                        {
+                            if (blocks[minecraftIndex] > 0)
+                                w.blockData[chunkIndex][worldIndex] = 1;
+                            else
+                                w.blockData[chunkIndex][worldIndex] = 0;
+                }
+            }
         }
 
 
-    int rx = 25;
-    int rz = 25;
-    blocks = reader.get_blocks_at(rx, rz);
-    heights = reader.get_heightmap_at(rx, rz);
 
 
-    for (unsigned int x = 0; x < w.width; x++)
-        for (unsigned int z = 0; z < w.breadth; z++)
-            for (unsigned int y = 0; y < w.depth; y++)
-            {
-                int worldIndex = x + y*w.width + z*w.width*w.breadth;
-                int minecraftIndex = (y * 16 + z) * 16 + x;
 
-                if (minecraftIndex < blocks.size())
-                {
-                    if (blocks[minecraftIndex] > 0)
-                        w.blockData[worldIndex] = 1;
-                    else
-                        w.blockData[worldIndex] = 0;
-                }
-            }
-
-
-    w.blockData[0] = 1;
+    w.blockData[0][0] = 1;
 
     loadPNG("tex2.png");
 
@@ -264,6 +261,7 @@ int main( void )
 
         // Compute the MVP matrix from keyboard and mouse input
         computeMatricesFromInputs();
+        int chunkNumber = getChunkNumber();
         glm::mat4 ProjectionMatrix = getProjectionMatrix();
         glm::mat4 ViewMatrix = getViewMatrix();
 
@@ -280,7 +278,7 @@ int main( void )
                 for (unsigned int y = 0; y < w.depth; y++)
                 {
                     int worldIndex = x + z*w.width + y*w.width*w.breadth;
-                    if (w.blockData[worldIndex]  == 1)
+                    if (w.blockData[chunkNumber][worldIndex]  == 1)
                     {
                         v.SetTranslation(x,y,z);
                         v.Draw(ProjectionMatrix, ViewMatrix);
