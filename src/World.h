@@ -8,7 +8,7 @@ public:
 
     void SetBlock(int x, int y, int z);
     int width;
-    int height;
+    int breadth;
     int depth;
 
 };

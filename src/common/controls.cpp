@@ -9,6 +9,8 @@ using namespace glm;
 
 #include "controls.hpp"
 
+#include <iostream>
+
 glm::mat4 ViewMatrix;
 glm::mat4 ProjectionMatrix;
 
@@ -31,6 +33,9 @@ float initialFoV = 45.0f;
 
 float speed = 3.0f; // 3 units / second
 float mouseSpeed = 0.005f;
+int chunkNumber = 0;
+bool chunkFlip = false;
+
 
 
 
@@ -95,8 +100,27 @@ void computeMatricesFromInputs(){
 	}
 	// Strafe left
     if (glfwGetKey( window, GLFW_KEY_A ) == GLFW_PRESS){
-		position -= right * deltaTime * speed;
+        position -= right * deltaTime * speed;
 	}
+
+    // Strafe left
+    if (glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS){
+        speed = 6;
+    }
+    else
+        speed = 3;
+
+    // Strafe left
+    if (glfwGetKey( window, GLFW_KEY_P ) == GLFW_PRESS){
+        chunkFlip = true;
+    }
+
+    // Strafe left
+    if (glfwGetKey( window, GLFW_KEY_P ) == GLFW_RELEASE && chunkFlip){
+        chunkFlip = false;
+        chunkNumber++;
+        std::cout << "Chunk number " << chunkNumber << std::endl;
+    }
 
     float FoV = initialFoV;
     // - 5 * glfwGetMouseWheel(); // Now GLFW 3 requires
