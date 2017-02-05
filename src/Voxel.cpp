@@ -14,7 +14,7 @@ void Voxel::Load(GLuint programID)
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec2> uvs;
     std::vector<glm::vec3> normals;
-    bool res = loadOBJ("cube.obj", vertices, uvs, normals);
+    bool res = loadOBJ("minecube.obj", vertices, uvs, normals);
 
 
     std::vector<glm::vec3> tangents;
