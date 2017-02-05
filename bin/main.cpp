@@ -219,7 +219,7 @@ int main( void )
                 int index = x + y*width + z*width*depth;
                 if (w.blockData[index]  == 1)
                 {
-                    v.SetTranslation(2*x,2*y,2*z);
+                    v.SetTranslation(x,y,z);
                     v.Draw(ProjectionMatrix, ViewMatrix);
                 }
             }
