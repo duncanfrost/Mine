@@ -27,6 +27,12 @@ using namespace glm;
 #include "../src/World.h"
 #include <iostream>
 
+#include <iostream>
+#include <stdexcept>
+#include <vector>
+#include "../src/libanvil/region_file_reader.hpp"
+
+
 
 void APIENTRY DebugOutputCallback(GLenum source, GLenum type, GLuint id,
                                   GLenum severity, GLsizei length, const GLchar* message, const void* userParam){
@@ -58,6 +64,42 @@ void APIENTRY DebugOutputCallback(GLenum source, GLenum type, GLuint id,
 
 int main( void )
 {
+
+    // instantiate a file reader
+    region_file_reader reader;
+
+    // create vectors to hold block/height data
+    std::vector<int> blocks, heights;
+
+    try {
+
+        // open a region file
+        reader = region_file_reader("/home/duncan/.minecraft/saves/world/region/r.-1.0.mca");
+        reader.read();
+
+        blocks = reader.get_blocks_at(0, 0);
+
+        // iterate through all possible chunks within a region
+        for(unsigned int z = 0; z < 32; ++z)
+            for(unsigned int x = 0; x < 32; ++x) {
+
+                blocks = reader.get_blocks_at(x, z);
+                // this keeps an exception from being thrown
+                // when a non-existant chunk is requested
+                if(!reader.is_filled(x, z))
+                    continue;
+
+                // if everything goes well, retrieve the block/height data
+                blocks = reader.get_blocks_at(x, z);
+                heights = reader.get_heightmap_at(x, z);
+            }
+
+
+    // catch all exception that may occur
+    } catch(std::runtime_error &exc) {
+        std::cerr << exc.what() << std::endl;
+        return 1;
+    }
 
     loadPNG("tex2.png");
 
