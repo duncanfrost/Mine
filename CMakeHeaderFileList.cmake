@@ -20,6 +20,7 @@ set (HEADER_COMMON
   common/text2D.hpp
   common/texture.hpp
   common/vboindexer.hpp
+  common/ImageRead.h
   )
 
 SET (HEADER_ALL

@@ -10,7 +10,7 @@ in vec3 LightDirection_tangentspace;
 in vec3 EyeDirection_tangentspace;
 
 // Ouput data
-out vec3 color;
+out vec4 color;
 
 // Values that stay constant for the whole mesh.
 uniform sampler2D DiffuseTextureSampler;
@@ -30,6 +30,7 @@ void main(){
 
     // Material properties
     vec3 MaterialDiffuseColor = texture( DiffuseTextureSampler, UV ).rgb;
+    float alpha = texture(DiffuseTextureSampler, UV).a;
     vec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;
     vec3 MaterialSpecularColor = texture( SpecularTextureSampler, UV ).rgb * 0.3;
 
@@ -60,7 +61,7 @@ void main(){
     //  - Looking elsewhere -> < 1
     float cosAlpha = clamp( dot( E,R ), 0,1 );
 
-    color =
+    color.rgb =
             // Ambient : simulates indirect lighting
             MaterialAmbientColor +
             // Diffuse : "color" of the object
@@ -68,7 +69,6 @@ void main(){
             // Specular : reflective highlight, like a mirror
             MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / (distance*distance);
 
-
-
-
+    color.rgb = MaterialDiffuseColor * LightColor;
+    color.a = alpha;
 }

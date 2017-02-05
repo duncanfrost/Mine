@@ -5,7 +5,8 @@
 #include <GL/glew.h>
 
 #include <GLFW/glfw3.h>
-
+#include "ImageRead.h"
+#include <iostream>
 
 GLuint loadBMP_custom(const char * imagepath){
 
@@ -66,7 +67,7 @@ GLuint loadBMP_custom(const char * imagepath){
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
 	// Give the image to OpenGL
-	glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
 
 	// OpenGL has now copied the data. Free our own version
 	delete [] data;
@@ -212,6 +213,41 @@ GLuint loadDDS(const char * imagepath){
     glGenerateMipmap(GL_TEXTURE_2D);
 
 	return textureID;
+}
 
+GLuint loadPNG(std::string path)
+{
+    unsigned int width, height, channels;
+    if (!PNGImageInfo(path,width,height,channels))
+    {
+        return 0;
+    }
+
+    unsigned char *data;
+    data = new unsigned char[width*height*channels];
+    PNGRead(path,data);
+
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+
+    // "Bind" the newly created texture : all future texture functions will modify this texture
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+
+//    for (unsigned int d = 0; d < width*height*channels; d++)
+//        data[d] = 255;
+
+    // Give the image to OpenGL
+    if (channels == 3)
+        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    else
+        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+    // ... nice trilinear filtering.
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//    glGenerateMipmap(GL_TEXTURE_2D);
+
+    return textureID;
 
 }

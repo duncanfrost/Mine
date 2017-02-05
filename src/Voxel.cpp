@@ -62,7 +62,8 @@ void Voxel::Load(GLuint programID)
 
 
     // Load the texture
-    DiffuseTexture = loadDDS("diffuse.DDS");
+//    DiffuseTexture = loadDDS("diffuse.DDS");
+    DiffuseTexture = loadPNG("tex.png");
     NormalTexture = loadBMP_custom("normal.bmp");
     SpecularTexture = loadDDS("specular.DDS");
 

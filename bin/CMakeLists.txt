@@ -14,6 +14,8 @@ configure_file(../data/cylinder.obj cylinder.obj COPYONLY)
 configure_file(../data/diffuse.DDS diffuse.DDS COPYONLY)
 configure_file(../data/normal.bmp normal.bmp COPYONLY)
 configure_file(../data/specular.DDS specular.DDS COPYONLY)
+configure_file(../data/tex.png tex.png COPYONLY)
+configure_file(../data/tex2.png tex2.png COPYONLY)
 
 
 # If you want to add/remove a source, modify here

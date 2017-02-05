@@ -59,6 +59,9 @@ void APIENTRY DebugOutputCallback(GLenum source, GLenum type, GLuint id,
 int main( void )
 {
 
+    loadPNG("tex2.png");
+
+
 	// Initialise GLFW
 	if( !glfwInit() )
 	{
@@ -128,12 +131,12 @@ int main( void )
     glfwSetCursorPos(window, 1024/2, 768/2);
 
 	// Dark blue background
-	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
 	// Enable depth test
 	glEnable(GL_DEPTH_TEST);
 	// Accept fragment if it closer to the camera than the former one
-	glDepthFunc(GL_LESS); 
+    glDepthFunc(GL_LESS);
 
 	// Cull triangles which normal is not towards the camera
     glEnable(GL_CULL_FACE); // Not this time !
@@ -170,14 +173,9 @@ int main( void )
 	double lastTime = glfwGetTime();
 	int nbFrames = 0;
 
-
-
 	// Enable blending
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    initText2D("Holstein.DDS");
-
 
 	do{
 
@@ -193,9 +191,6 @@ int main( void )
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-        printText2D("Hello my name is duncan",10,10,20);
 
 		// Use our shader
 		glUseProgram(programID);
@@ -228,11 +223,6 @@ int main( void )
                     v.Draw(ProjectionMatrix, ViewMatrix);
                 }
             }
-
-
-
-
-
 		// Swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
