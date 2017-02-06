@@ -16,24 +16,46 @@ void Voxel::Load(GLuint programID)
     std::vector<glm::vec3> normals;
     bool res = loadOBJ("minecube.obj", vertices, uvs, normals);
 
+//    vertices.clear();
+//    uvs.clear();
+//    normals.clear();
 
-    std::vector<glm::vec3> tangents;
-    std::vector<glm::vec3> bitangents;
-    computeTangentBasis(
-                vertices, uvs, normals, // input
-                tangents, bitangents    // output
-                );
+//    vertices.push_back(glm::vec3(-0.5,0.5,-0.5));
+//    vertices.push_back(glm::vec3(-0.5,0.5,0.5));
+//    vertices.push_back(glm::vec3(0.5,0.5,-0.5));
+
+
+
+
+//    vertices.push_back(glm::vec3(0.5,0.5,-0.5));
+//    vertices.push_back(glm::vec3(0.5,0.5,0.5));
+//    vertices.push_back(glm::vec3(-0.5,0.5,0.5));
+
+//    normals.push_back(glm::vec3(0,1,0));
+//    normals.push_back(glm::vec3(0,1,0));
+//    normals.push_back(glm::vec3(0,1,0));
+//    normals.push_back(glm::vec3(0,1,0));
+//    normals.push_back(glm::vec3(0,1,0));
+//    normals.push_back(glm::vec3(0,1,0));
+
+//    float blocksize = 16.0f/256.0f;
+
+//    uvs.push_back(glm::vec2(0,-(1-blocksize)));
+//    uvs.push_back(glm::vec2(0,-1));
+//    uvs.push_back(glm::vec2(blocksize,-(1-blocksize)));
+
+//    uvs.push_back(glm::vec2(0,-1));
+//    uvs.push_back(glm::vec2(1,-1));
+//    uvs.push_back(glm::vec2(0,0));
+
 
     std::vector<glm::vec3> indexed_vertices;
     std::vector<glm::vec2> indexed_uvs;
     std::vector<glm::vec3> indexed_normals;
-    std::vector<glm::vec3> indexed_tangents;
-    std::vector<glm::vec3> indexed_bitangents;
-    indexVBO_TBN(
-                vertices, uvs, normals, tangents, bitangents,
-                indices, indexed_vertices, indexed_uvs, indexed_normals,
-                indexed_tangents, indexed_bitangents
-                );
+
+
+    indexVBO( vertices, uvs, normals,
+                indices, indexed_vertices, indexed_uvs, indexed_normals);
 
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -47,13 +69,6 @@ void Voxel::Load(GLuint programID)
     glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
     glBufferData(GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::vec3), &indexed_normals[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &tangentbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, tangentbuffer);
-    glBufferData(GL_ARRAY_BUFFER, indexed_tangents.size() * sizeof(glm::vec3), &indexed_tangents[0], GL_STATIC_DRAW);
-
-    glGenBuffers(1, &bitangentbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, bitangentbuffer);
-    glBufferData(GL_ARRAY_BUFFER, indexed_bitangents.size() * sizeof(glm::vec3), &indexed_bitangents[0], GL_STATIC_DRAW);
 
     // Generate a buffer for the indices as well
     glGenBuffers(1, &elementbuffer);
@@ -62,7 +77,7 @@ void Voxel::Load(GLuint programID)
 
 
     // Load the texture
-//    DiffuseTexture = loadDDS("diffuse.DDS");
+    //    DiffuseTexture = loadDDS("diffuse.DDS");
     DiffuseTexture = loadPNG("tex.png");
     NormalTexture = loadBMP_custom("normal.bmp");
     SpecularTexture = loadDDS("specular.DDS");

@@ -13,7 +13,7 @@ World::World()
             for (unsigned int z = 0; z < breadth; z++)
                 for (unsigned int y = 0; y < depth; y++)
                 {
-                    int index = x + z*width + y*width*breadth;
+                    int index = (y * 16 + z) * 16 + x;
                     blockData[chunk][index] = 0;
                 }
     }

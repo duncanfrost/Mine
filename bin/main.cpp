@@ -66,6 +66,8 @@ int main( void )
 {
 
     World w;
+    Voxel v1;
+//    v1.Load(1);
     // instantiate a file reader
     region_file_reader reader;
 
@@ -105,7 +107,7 @@ int main( void )
                 for (unsigned int z = 0; z < w.breadth; z++)
                     for (unsigned int y = 0; y < w.depth; y++)
                     {
-                        int worldIndex = x + y*w.width + z*w.width*w.breadth;
+                        int worldIndex = (y * 16 + z) * 16 + x;
                         int minecraftIndex = (y * 16 + z) * 16 + x;
 
                         if (minecraftIndex < blocks.size())
@@ -262,6 +264,7 @@ int main( void )
         // Compute the MVP matrix from keyboard and mouse input
         computeMatricesFromInputs();
         int chunkNumber = getChunkNumber();
+        int offset = getOffset();
         glm::mat4 ProjectionMatrix = getProjectionMatrix();
         glm::mat4 ViewMatrix = getViewMatrix();
 
@@ -277,10 +280,10 @@ int main( void )
             for (unsigned int z = 0; z < w.breadth; z++)
                 for (unsigned int y = 0; y < w.depth; y++)
                 {
-                    int worldIndex = x + z*w.width + y*w.width*w.breadth;
+                    int worldIndex = (y * 16 + z) * 16 + x;
                     if (w.blockData[chunkNumber][worldIndex]  == 1)
                     {
-                        v.SetTranslation(x,y,z);
+                        v.SetTranslation(x,offset-y,z);
                         v.Draw(ProjectionMatrix, ViewMatrix);
                     }
                 }

@@ -37,6 +37,9 @@ int chunkNumber = 0;
 bool chunkFlip = false;
 
 
+int offsetNumber = 80;
+bool offsetFlip = false;
+
 int getChunkNumber()
 {
     // Strafe left
@@ -52,6 +55,24 @@ int getChunkNumber()
     }
 
     return chunkNumber;
+}
+
+
+int getOffset()
+{
+    // Strafe left
+    if (glfwGetKey( window, GLFW_KEY_O ) == GLFW_PRESS){
+        offsetFlip = true;
+    }
+
+    // Strafe left
+    if (glfwGetKey( window, GLFW_KEY_O ) == GLFW_RELEASE && offsetFlip){
+        offsetFlip = false;
+        offsetNumber++;
+        std::cout << "offset number " << offsetNumber << std::endl;
+    }
+
+    return offsetNumber;
 }
 
 
