@@ -16,37 +16,39 @@ void Voxel::Load(GLuint programID)
     std::vector<glm::vec3> normals;
     bool res = loadOBJ("minecube.obj", vertices, uvs, normals);
 
-//    vertices.clear();
-//    uvs.clear();
-//    normals.clear();
-
-//    vertices.push_back(glm::vec3(-0.5,0.5,-0.5));
-//    vertices.push_back(glm::vec3(-0.5,0.5,0.5));
-//    vertices.push_back(glm::vec3(0.5,0.5,-0.5));
+    vertices.clear();
+    uvs.clear();
+    normals.clear();
 
 
+    int yplane = 0.5;
+    vertices.push_back(glm::vec3(-0.5,yplane,-0.5));
+    vertices.push_back(glm::vec3(-0.5,yplane,0.5));
+    vertices.push_back(glm::vec3(0.5,yplane,-0.5));
+
+    vertices.push_back(glm::vec3(0.5,yplane,-0.5));
+    vertices.push_back(glm::vec3(-0.5,yplane,0.5));
+    vertices.push_back(glm::vec3(0.5,yplane,0.5));
 
 
-//    vertices.push_back(glm::vec3(0.5,0.5,-0.5));
-//    vertices.push_back(glm::vec3(0.5,0.5,0.5));
-//    vertices.push_back(glm::vec3(-0.5,0.5,0.5));
 
-//    normals.push_back(glm::vec3(0,1,0));
-//    normals.push_back(glm::vec3(0,1,0));
-//    normals.push_back(glm::vec3(0,1,0));
-//    normals.push_back(glm::vec3(0,1,0));
-//    normals.push_back(glm::vec3(0,1,0));
-//    normals.push_back(glm::vec3(0,1,0));
+    normals.push_back(glm::vec3(0,1,0));
+    normals.push_back(glm::vec3(0,1,0));
+    normals.push_back(glm::vec3(0,1,0));
+    normals.push_back(glm::vec3(0,1,0));
+    normals.push_back(glm::vec3(0,1,0));
+    normals.push_back(glm::vec3(0,1,0));
 
-//    float blocksize = 16.0f/256.0f;
+    float blocksize = 16.0f/256.0f;
 
-//    uvs.push_back(glm::vec2(0,-(1-blocksize)));
-//    uvs.push_back(glm::vec2(0,-1));
-//    uvs.push_back(glm::vec2(blocksize,-(1-blocksize)));
 
-//    uvs.push_back(glm::vec2(0,-1));
-//    uvs.push_back(glm::vec2(1,-1));
-//    uvs.push_back(glm::vec2(0,0));
+    uvs.push_back(glm::vec2(0,-1));
+    uvs.push_back(glm::vec2(0,-(1-blocksize)));
+    uvs.push_back(glm::vec2(blocksize,-1));
+
+    uvs.push_back(glm::vec2(blocksize,-1));
+    uvs.push_back(glm::vec2(0,-(1-blocksize)));
+    uvs.push_back(glm::vec2(blocksize,-(1-blocksize)));
 
 
     std::vector<glm::vec3> indexed_vertices;
@@ -55,7 +57,7 @@ void Voxel::Load(GLuint programID)
 
 
     indexVBO( vertices, uvs, normals,
-                indices, indexed_vertices, indexed_uvs, indexed_normals);
+              indices, indexed_vertices, indexed_uvs, indexed_normals);
 
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
