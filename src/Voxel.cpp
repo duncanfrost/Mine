@@ -3,10 +3,108 @@
 #include "common/vboindexer.hpp"
 #include "common/tangentspace.hpp"
 #include "common/texture.hpp"
+#include <iostream>
 
 Voxel::Voxel()
 {
     ModelMatrix = glm::mat4(1.0);
+}
+
+
+void GenSide(
+        glm::vec3 normal,
+        std::vector<glm::vec3> &vertices,
+        std::vector<glm::vec2> &uvs,
+        std::vector<glm::vec3> &normals
+        )
+
+{
+
+    float yplane = 0.5;
+
+    int otherindex1, otherindex2;
+    int planeIndex;
+
+    float normalSign;
+
+    if (abs(normal[0]) == 1)
+    {
+        planeIndex = 0;
+        otherindex1 = 2;
+        otherindex2 = 1;
+    }
+    if (abs(normal[1]) == 1)
+    {
+        planeIndex = 1;
+        otherindex1 = 0;
+        otherindex2 = 2;
+    }
+    if (abs(normal[2]) == 1)
+    {
+        planeIndex = 2;
+        otherindex1 = 1;
+        otherindex2 = 0;
+    }
+
+
+    normalSign = normal[planeIndex];
+    yplane *= normalSign;
+    if (normalSign < 0)
+    {
+        int tmp = otherindex1;
+        otherindex1 = otherindex2;
+        otherindex2 = tmp;
+    }
+
+
+
+
+    glm::vec3 inputVec;
+    inputVec[otherindex1] = -0.5;
+    inputVec[otherindex2] = -0.5;
+    inputVec[planeIndex] = yplane;
+
+    vertices.push_back(inputVec);
+
+
+
+    inputVec[otherindex2] = 0.5;
+    vertices.push_back(inputVec);
+
+    inputVec[otherindex2] = -0.5;
+    inputVec[otherindex1] = 0.5;
+    vertices.push_back(inputVec);
+
+
+
+    vertices.push_back(inputVec);
+
+    inputVec[otherindex1] = -0.5;
+    inputVec[otherindex2] = 0.5;
+    vertices.push_back(inputVec);
+
+    inputVec[otherindex1] = 0.5;
+    vertices.push_back(inputVec);
+
+    normals.push_back(normal);
+    normals.push_back(normal);
+    normals.push_back(normal);
+    normals.push_back(normal);
+    normals.push_back(normal);
+    normals.push_back(normal);
+
+    float blocksize = 16.0f/256.0f;
+
+
+    uvs.push_back(glm::vec2(0,-1));
+    uvs.push_back(glm::vec2(0,-(1-blocksize)));
+    uvs.push_back(glm::vec2(blocksize,-1));
+
+    uvs.push_back(glm::vec2(blocksize,-1));
+    uvs.push_back(glm::vec2(0,-(1-blocksize)));
+    uvs.push_back(glm::vec2(blocksize,-(1-blocksize)));
+
+
 }
 
 void Voxel::Load(GLuint programID)
@@ -21,34 +119,16 @@ void Voxel::Load(GLuint programID)
     normals.clear();
 
 
-    int yplane = 0.5;
-    vertices.push_back(glm::vec3(-0.5,yplane,-0.5));
-    vertices.push_back(glm::vec3(-0.5,yplane,0.5));
-    vertices.push_back(glm::vec3(0.5,yplane,-0.5));
-
-    vertices.push_back(glm::vec3(0.5,yplane,-0.5));
-    vertices.push_back(glm::vec3(-0.5,yplane,0.5));
-    vertices.push_back(glm::vec3(0.5,yplane,0.5));
+    GenSide(glm::vec3(0,1,0),vertices,uvs,normals);
+    GenSide(glm::vec3(0,0,1),vertices,uvs,normals);
+    GenSide(glm::vec3(1,0,0),vertices,uvs,normals);
+    GenSide(glm::vec3(-1,0,0),vertices,uvs,normals);
+    GenSide(glm::vec3(0,-1,0),vertices,uvs,normals);
+    GenSide(glm::vec3(0,0,-1),vertices,uvs,normals);
 
 
 
-    normals.push_back(glm::vec3(0,1,0));
-    normals.push_back(glm::vec3(0,1,0));
-    normals.push_back(glm::vec3(0,1,0));
-    normals.push_back(glm::vec3(0,1,0));
-    normals.push_back(glm::vec3(0,1,0));
-    normals.push_back(glm::vec3(0,1,0));
 
-    float blocksize = 16.0f/256.0f;
-
-
-    uvs.push_back(glm::vec2(0,-1));
-    uvs.push_back(glm::vec2(0,-(1-blocksize)));
-    uvs.push_back(glm::vec2(blocksize,-1));
-
-    uvs.push_back(glm::vec2(blocksize,-1));
-    uvs.push_back(glm::vec2(0,-(1-blocksize)));
-    uvs.push_back(glm::vec2(blocksize,-(1-blocksize)));
 
 
     std::vector<glm::vec3> indexed_vertices;
