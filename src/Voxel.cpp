@@ -96,11 +96,6 @@ void GenSide(int gridX, int gridY,
     float blocksize = 16.0f/256.0f;
 
 
-    gridX = 15;
-    gridY = 1;
-
-
-
     if (normal[0] == -1 || normal[2] == 1 || normal[1] == 1)
     {
         uvs.push_back(glm::vec2(gridX*blocksize,-1 +(gridY+1)*blocksize));
@@ -113,11 +108,6 @@ void GenSide(int gridX, int gridY,
     }
     else
     {
-
-
-
-
-
         uvs.push_back(glm::vec2((gridX+1)*blocksize,-1 +(gridY+1)*blocksize));
         uvs.push_back(glm::vec2((gridX+1)*blocksize,-1 +(gridY)*blocksize));
         uvs.push_back(glm::vec2(gridX*blocksize,-1 +(gridY+1)*blocksize));
@@ -125,13 +115,7 @@ void GenSide(int gridX, int gridY,
         uvs.push_back(glm::vec2((gridX)*blocksize,-1 +(gridY+1)*blocksize));
         uvs.push_back(glm::vec2((gridX+1)*blocksize,-1 +(gridY)*blocksize));
         uvs.push_back(glm::vec2(gridX*blocksize,-1 +(gridY)*blocksize));
-
-
-
     }
-
-
-
 }
 
 void Voxel::Load(GLuint programID)
@@ -146,11 +130,11 @@ void Voxel::Load(GLuint programID)
     normals.clear();
 
 
-//    GenSide(0,0,glm::vec3(0,1,0),vertices,uvs,normals);
+    GenSide(0,0,glm::vec3(0,1,0),vertices,uvs,normals);
     GenSide(3,0,glm::vec3(0,0,1),vertices,uvs,normals);
     GenSide(3,0,glm::vec3(1,0,0),vertices,uvs,normals);
     GenSide(3,0,glm::vec3(-1,0,0),vertices,uvs,normals);
-//    GenSide(2,0,glm::vec3(0,-1,0),vertices,uvs,normals);
+    GenSide(2,0,glm::vec3(0,-1,0),vertices,uvs,normals);
     GenSide(3,0,glm::vec3(0,0,-1),vertices,uvs,normals);
 
 
