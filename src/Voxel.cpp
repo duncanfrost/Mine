@@ -118,7 +118,7 @@ void GenSide(int gridX, int gridY,
     }
 }
 
-void Voxel::Load(GLuint programID)
+void Voxel::Load(GLuint programID, int ID)
 {
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec2> uvs;
@@ -129,13 +129,108 @@ void Voxel::Load(GLuint programID)
     uvs.clear();
     normals.clear();
 
+    int topUVX, topUVY;
+    int sideUVX, sideUVY;
+    int bottomUVX, bottomUVY;
 
-    GenSide(0,0,glm::vec3(0,1,0),vertices,uvs,normals);
-    GenSide(3,0,glm::vec3(0,0,1),vertices,uvs,normals);
-    GenSide(3,0,glm::vec3(1,0,0),vertices,uvs,normals);
-    GenSide(3,0,glm::vec3(-1,0,0),vertices,uvs,normals);
-    GenSide(2,0,glm::vec3(0,-1,0),vertices,uvs,normals);
-    GenSide(3,0,glm::vec3(0,0,-1),vertices,uvs,normals);
+    switch (ID) {
+    case 7:
+        topUVX = topUVY = sideUVX = sideUVY = bottomUVX = bottomUVY = 1;
+        break;
+    case 1:
+        topUVX = bottomUVX = sideUVX = 1;
+        topUVY = bottomUVY = sideUVY = 0;
+        break;
+    case 3:
+        topUVX = bottomUVX = sideUVX = 2;
+        topUVY = bottomUVY = sideUVY = 0;
+        break;
+    case 2:
+        sideUVX = 3;
+        topUVX = 0;
+        bottomUVX = 2;
+        sideUVY = topUVY = bottomUVY = 0;
+        break;
+    case 13:
+        topUVX = bottomUVX = sideUVX = 3;
+        topUVY = bottomUVY = sideUVY = 1;
+        break;
+    case 15:
+        topUVX = bottomUVX = sideUVX = 1;
+        topUVY = bottomUVY = sideUVY = 2;
+        break;
+    case 16:
+        topUVX = bottomUVX = sideUVX = 2;
+        topUVY = bottomUVY = sideUVY = 2;
+        break;
+    case 56:
+        topUVX = bottomUVX = sideUVX = 2;
+        topUVY = bottomUVY = sideUVY = 3;
+        break;
+    case 21:
+        topUVX = bottomUVX = sideUVX = 0;
+        topUVY = bottomUVY = sideUVY = 10;
+        break;
+    case 11:
+        topUVX = bottomUVX = sideUVX = 14;
+        topUVY = bottomUVY = sideUVY = 14;
+        break;
+    case 73:
+        topUVX = bottomUVX = sideUVX = 3;
+        topUVY = bottomUVY = sideUVY = 3;
+        break;
+    case 14:
+        topUVX = bottomUVX = sideUVX = 0;
+        topUVY = bottomUVY = sideUVY = 2;
+        break;
+    case 9:
+        topUVX = bottomUVX = sideUVX = 0;
+        topUVY = bottomUVY = sideUVY = 9;
+        break;
+    case 12:
+        topUVX = bottomUVX = sideUVX = 1;
+        topUVY = bottomUVY = sideUVY = 2;
+        break;
+    case 18:
+        topUVX = bottomUVX = sideUVX = 5;
+        topUVY = bottomUVY = sideUVY = 3;
+        break;
+    case 82:
+        topUVX = bottomUVX = sideUVX = 8;
+        topUVY = bottomUVY = sideUVY = 4;
+        break;
+    case 49:
+        topUVX = bottomUVX = sideUVX = 5;
+        topUVY = bottomUVY = sideUVY = 2;
+        break;
+    case 48:
+        topUVX = bottomUVX = sideUVX = 4;
+        topUVY = bottomUVY = sideUVY = 2;
+        break;
+    case 4:
+        topUVX = bottomUVX = sideUVX = 0;
+        topUVY = bottomUVY = sideUVY = 1;
+        break;
+    case 17:
+        topUVY = bottomUVY = sideUVY = 1;
+        topUVX = bottomUVX = 5;
+        sideUVX = 4;
+        break;
+    default:
+        std::cout << "I don't have uv coordinates for this block" << std::endl;
+        exit(1);
+    }
+
+
+
+
+
+    GenSide(topUVX,topUVY,glm::vec3(0,1,0),vertices,uvs,normals);
+    GenSide(bottomUVX,bottomUVY,glm::vec3(0,-1,0),vertices,uvs,normals);
+    GenSide(sideUVX,sideUVY,glm::vec3(0,0,1),vertices,uvs,normals);
+    GenSide(sideUVX,sideUVY,glm::vec3(1,0,0),vertices,uvs,normals);
+    GenSide(sideUVX,sideUVY,glm::vec3(-1,0,0),vertices,uvs,normals);
+    GenSide(sideUVX,sideUVY,glm::vec3(0,0,-1),vertices,uvs,normals);
 
 
     std::vector<glm::vec3> indexed_vertices;

@@ -30,6 +30,7 @@ using namespace glm;
 #include <iostream>
 #include <stdexcept>
 #include <vector>
+#include <set>
 #include "../src/libanvil/region_file_reader.hpp"
 
 
@@ -65,9 +66,11 @@ void APIENTRY DebugOutputCallback(GLenum source, GLenum type, GLuint id,
 int main( void )
 {
 
+
+
     World w;
     Voxel v1;
-//    v1.Load(1);
+    //    v1.Load(1);
     // instantiate a file reader
     region_file_reader reader;
 
@@ -112,12 +115,13 @@ int main( void )
 
                         if (minecraftIndex < blocks.size())
                         {
-                            if (blocks[minecraftIndex] > 0)
-                                w.blockData[chunkIndex][worldIndex] = 1;
+                            int id = blocks[minecraftIndex];
+                            if (id > 0)
+                                w.blockData[chunkIndex][worldIndex] = id;
                             else
                                 w.blockData[chunkIndex][worldIndex] = 0;
-                }
-            }
+                        }
+                    }
         }
 
 
@@ -216,9 +220,26 @@ int main( void )
     GLuint programID = LoadShaders( "SimpleVertexShader.glsl", "SimpleFragmentShader.glsl" );
 
 
-    // Read our .obj file
+    int ids[] = {7,1,3,4,2,13,16,56,15,73,21,11,14,9,12,18,17,82,49,48};
+    std::map<int, Voxel> voxelMap;
     Voxel v;
-    v.Load(programID);
+    for (unsigned int i = 0; i < 20; i++)
+    {
+        int id = ids[i];
+        v.Load(programID,id);
+        voxelMap.insert(std::make_pair(id,v));
+    }
+    // Read our .obj file
+
+    std::set<int> ignored;
+    ignored.insert(31);
+    ignored.insert(37);
+    ignored.insert(38);
+    ignored.insert(39);
+    ignored.insert(10);
+    ignored.insert(8);
+    ignored.insert(83);
+    ignored.insert(40);
 
 
 
@@ -281,10 +302,21 @@ int main( void )
                 for (unsigned int y = 0; y < w.depth; y++)
                 {
                     int worldIndex = (y * 16 + z) * 16 + x;
-                    if (w.blockData[chunkNumber][worldIndex]  == 1)
+                    if (w.blockData[chunkNumber][worldIndex]  > 0)
                     {
-                        v.SetTranslation(x,offset-y,z);
-                        v.Draw(ProjectionMatrix, ViewMatrix);
+                        int id = w.blockData[chunkNumber][worldIndex];
+                        if (voxelMap.count(id))
+                        {
+                            Voxel vDraw = voxelMap.at(id);
+                            vDraw.SetTranslation(x,offset-y,z);
+                            vDraw.Draw(ProjectionMatrix, ViewMatrix);
+                        }
+                        else if (!ignored.count(id))
+                        {
+
+                            std::cout << "ID " << id << std::endl;
+                            exit(1);
+                        }
                     }
                 }
         // Swap buffers

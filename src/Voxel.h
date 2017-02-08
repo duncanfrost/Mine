@@ -8,7 +8,7 @@ public:
 
     Voxel();
 
-    void Load(GLuint programID);
+    void Load(GLuint programID, int ID);
     void Unload();
 
     void Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix);
