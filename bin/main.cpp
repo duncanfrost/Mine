@@ -296,29 +296,32 @@ int main( void )
         glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
 
 
-
-        for (unsigned int x = 0; x < w.width; x++)
-            for (unsigned int z = 0; z < w.breadth; z++)
-                for (unsigned int y = 0; y < w.depth; y++)
-                {
-                    int worldIndex = (y * 16 + z) * 16 + x;
-                    if (w.blockData[chunkNumber][worldIndex]  > 0)
-                    {
-                        int id = w.blockData[chunkNumber][worldIndex];
-                        if (voxelMap.count(id))
+        for (int rx = chunkNumber; rx < chunkNumber+4; rx++)
+            for (int rz = chunkNumber; rz < chunkNumber+4; rz++)
+            {
+                int chunkIndex = rx + 32*rz;
+                for (unsigned int x = 0; x < w.width; x++)
+                    for (unsigned int z = 0; z < w.breadth; z++)
+                        for (unsigned int y = 0; y < w.depth; y++)
                         {
-                            Voxel vDraw = voxelMap.at(id);
-                            vDraw.SetTranslation(x,offset-y,z);
-                            vDraw.Draw(ProjectionMatrix, ViewMatrix);
+                            int worldIndex = (y * 16 + z) * 16 + x;
+                            if (w.blockData[chunkIndex][worldIndex]  > 0)
+                            {
+                                int id = w.blockData[chunkIndex][worldIndex];
+                                if (voxelMap.count(id))
+                                {
+                                    Voxel vDraw = voxelMap.at(id);
+                                    vDraw.SetTranslation(16*rx + x,offset-y,16*rz + z);
+                                    vDraw.Draw(ProjectionMatrix, ViewMatrix);
+                                }
+                                else if (!ignored.count(id))
+                                {
+                                    //                            std::cout << "ID " << id << std::endl;
+                                    //                            exit(1);
+                                }
+                            }
                         }
-                        else if (!ignored.count(id))
-                        {
-
-                            std::cout << "ID " << id << std::endl;
-                            exit(1);
-                        }
-                    }
-                }
+            }
         // Swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
