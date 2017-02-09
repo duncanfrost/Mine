@@ -124,13 +124,9 @@ int main( void )
                                 c.blockData[worldIndex] = 0;
                         }
                     }
+            c.ComputeDrawData();
             w.chunks.push_back(c);
         }
-
-
-
-
-    loadPNG("tex2.png");
 
 
     // Initialise GLFW
@@ -240,15 +236,6 @@ int main( void )
     ignored.insert(8);
     ignored.insert(83);
     ignored.insert(40);
-
-
-
-    //    for (unsigned int x = 0; x < w.width; x++)
-    //            for (unsigned int z = 0; z < w.depth; z++)
-    //            {
-    //                w.SetBlock(x,0,z);
-    //                w.SetBlock(x,9,z);
-    //            }
 
 
 
