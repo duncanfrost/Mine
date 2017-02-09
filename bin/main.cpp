@@ -104,11 +104,13 @@ int main( void )
             heights = reader.get_heightmap_at(rx, rz);
 
             std::cout << "Got blocks at " << rx << "," << rz << std::endl;
-            int chunkIndex = rx + 32*rz;
+            Chunk c;
+            c.x = rx;
+            c.z = rz;
 
-            for (unsigned int x = 0; x < w.width; x++)
-                for (unsigned int z = 0; z < w.breadth; z++)
-                    for (unsigned int y = 0; y < w.depth; y++)
+            for (unsigned int x = 0; x < region_dim::BLOCK_WIDTH; x++)
+                for (unsigned int z = 0; z < region_dim::BLOCK_WIDTH; z++)
+                    for (unsigned int y = 0; y < region_dim::BLOCK_HEIGHT; y++)
                     {
                         int worldIndex = (y * 16 + z) * 16 + x;
                         int minecraftIndex = (y * 16 + z) * 16 + x;
@@ -117,18 +119,16 @@ int main( void )
                         {
                             int id = blocks[minecraftIndex];
                             if (id > 0)
-                                w.blockData[chunkIndex][worldIndex] = id;
+                                c.blockData[worldIndex] = id;
                             else
-                                w.blockData[chunkIndex][worldIndex] = 0;
+                                c.blockData[worldIndex] = 0;
                         }
                     }
+            w.chunks.push_back(c);
         }
 
 
 
-
-
-    w.blockData[0][0] = 1;
 
     loadPNG("tex2.png");
 
@@ -296,32 +296,34 @@ int main( void )
         glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
 
 
-        for (int rx = chunkNumber; rx < chunkNumber+4; rx++)
-            for (int rz = chunkNumber; rz < chunkNumber+4; rz++)
-            {
-                int chunkIndex = rx + 32*rz;
-                for (unsigned int x = 0; x < w.width; x++)
-                    for (unsigned int z = 0; z < w.breadth; z++)
-                        for (unsigned int y = 0; y < w.depth; y++)
+        for (int i = 0; i < w.chunks.size(); i++)
+        {
+            Chunk c = w.chunks[i];
+            if (c.x > 4 || c.z > 4)
+                continue;
+            for (unsigned int x = 0; x < region_dim::BLOCK_WIDTH; x++)
+                for (unsigned int z = 0; z < region_dim::BLOCK_WIDTH; z++)
+                    for (unsigned int y = 0; y < region_dim::BLOCK_HEIGHT; y++)
+                    {
+                        int worldIndex = (y * 16 + z) * 16 + x;
+                        if (c.blockData[worldIndex]  > 0)
                         {
-                            int worldIndex = (y * 16 + z) * 16 + x;
-                            if (w.blockData[chunkIndex][worldIndex]  > 0)
+                            int id = c.blockData[worldIndex];
+                            if (voxelMap.count(id))
                             {
-                                int id = w.blockData[chunkIndex][worldIndex];
-                                if (voxelMap.count(id))
-                                {
-                                    Voxel vDraw = voxelMap.at(id);
-                                    vDraw.SetTranslation(16*rx + x,offset-y,16*rz + z);
-                                    vDraw.Draw(ProjectionMatrix, ViewMatrix);
-                                }
-                                else if (!ignored.count(id))
-                                {
-                                    //                            std::cout << "ID " << id << std::endl;
-                                    //                            exit(1);
-                                }
+                                Voxel vDraw = voxelMap.at(id);
+                                vDraw.SetTranslation(16*c.x + x,offset-y,16*c.z + z);
+                                vDraw.Draw(ProjectionMatrix, ViewMatrix);
+                            }
+                            else if (!ignored.count(id))
+                            {
+                                //                            std::cout << "ID " << id << std::endl;
+                                //                            exit(1);
                             }
                         }
-            }
+                    }
+        }
+
         // Swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
