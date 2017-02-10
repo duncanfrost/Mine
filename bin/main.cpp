@@ -70,63 +70,10 @@ int main( void )
 
     World w;
     Voxel v1;
-    //    v1.Load(1);
-    // instantiate a file reader
-    region_file_reader reader;
-
-    // create vectors to hold block/height data
-    std::vector<int> blocks, heights;
 
 
 
-    // open a region file
-    reader = region_file_reader("/home/duncan/.minecraft/saves/world/region/r.-1.0.mca");
-    reader.read();
 
-    blocks = reader.get_blocks_at(0, 0);
-
-    // iterate through all possible chunks within a region
-
-
-    for (int rx = 0; rx < 32; rx++)
-        for (int rz = 0; rz < 32; rz++)
-        {
-            // this keeps an exception from being thrown
-            // when a non-existant chunk is requested
-            if(!reader.is_filled(rx, rz))
-            {
-                std::cout << "No blocks here" << std::endl;
-                continue;
-            }
-
-            // if everything goes well, retrieve the block/height data
-            blocks = reader.get_blocks_at(rx, rz);
-            heights = reader.get_heightmap_at(rx, rz);
-
-            std::cout << "Got blocks at " << rx << "," << rz << std::endl;
-            Chunk c;
-            c.x = rx;
-            c.z = rz;
-
-            for (unsigned int x = 0; x < region_dim::BLOCK_WIDTH; x++)
-                for (unsigned int z = 0; z < region_dim::BLOCK_WIDTH; z++)
-                    for (unsigned int y = 0; y < region_dim::BLOCK_HEIGHT; y++)
-                    {
-                        int worldIndex = (y * 16 + z) * 16 + x;
-                        int minecraftIndex = (y * 16 + z) * 16 + x;
-
-                        if (minecraftIndex < blocks.size())
-                        {
-                            int id = blocks[minecraftIndex];
-                            if (id > 0)
-                                c.blockData[worldIndex] = id;
-                            else
-                                c.blockData[worldIndex] = 0;
-                        }
-                    }
-            c.ComputeDrawData();
-            w.chunks.push_back(c);
-        }
 
 
     // Initialise GLFW
@@ -216,14 +163,28 @@ int main( void )
     GLuint programID = LoadShaders( "SimpleVertexShader.glsl", "SimpleFragmentShader.glsl" );
 
 
+
+
+
+
+    // Get a handle for our "LightPosition" uniform
+    glUseProgram(programID);
+    GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
+
+    // For speed computation
+    double lastTime = glfwGetTime();
+    int nbFrames = 0;
+
     int ids[] = {7,1,3,4,2,13,16,56,15,73,21,11,14,9,12,18,17,82,49,48};
     std::map<int, Voxel> voxelMap;
+    std::set<int> usedIDs;
     Voxel v;
     for (unsigned int i = 0; i < 20; i++)
     {
         int id = ids[i];
         v.Load(programID,id);
         voxelMap.insert(std::make_pair(id,v));
+        usedIDs.insert(id);
     }
     // Read our .obj file
 
@@ -237,19 +198,55 @@ int main( void )
     ignored.insert(83);
     ignored.insert(40);
 
-
-
-    // Get a handle for our "LightPosition" uniform
-    glUseProgram(programID);
-    GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
-
-    // For speed computation
-    double lastTime = glfwGetTime();
-    int nbFrames = 0;
-
     // Enable blending
     //    glEnable(GL_BLEND);
     //    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
+    // open a region file
+    region_file_reader reader = region_file_reader("/home/duncan/.minecraft/saves/world/region/r.-1.0.mca");
+    reader.read();
+
+    for (int rx = 0; rx < 32; rx++)
+        for (int rz = 0; rz < 32; rz++)
+        {
+            // this keeps an exception from being thrown
+            // when a non-existant chunk is requested
+            if(!reader.is_filled(rx, rz))
+            {
+                std::cout << "No blocks here" << std::endl;
+                continue;
+            }
+
+            // if everything goes well, retrieve the block/height data
+            std::vector<int> blocks = reader.get_blocks_at(rx, rz);
+            std::vector<int> heights = reader.get_heightmap_at(rx, rz);
+
+            std::cout << "Got blocks at " << rx << "," << rz << std::endl;
+            Chunk c;
+            c.x = rx;
+            c.z = rz;
+
+            for (unsigned int x = 0; x < region_dim::BLOCK_WIDTH; x++)
+                for (unsigned int z = 0; z < region_dim::BLOCK_WIDTH; z++)
+                    for (unsigned int y = 0; y < region_dim::BLOCK_HEIGHT; y++)
+                    {
+                        int worldIndex = (y * 16 + z) * 16 + x;
+                        int minecraftIndex = (y * 16 + z) * 16 + x;
+
+                        if (minecraftIndex < blocks.size())
+                        {
+                            int id = blocks[minecraftIndex];
+                            if (id > 0 && usedIDs.count(id))
+                                c.blockData[worldIndex] = id;
+                            else
+                                c.blockData[worldIndex] = 0;
+                        }
+                    }
+            c.ComputeDrawData();
+            w.chunks.push_back(c);
+        }
+
 
     do{
 
@@ -279,21 +276,21 @@ int main( void )
 
 
 
-        glm::vec3 lightPos = glm::vec3(4,4,4);
+        glm::vec3 lightPos = glm::vec3(4*16,4,4*16);
         glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
 
 
         for (int i = 0; i < w.chunks.size(); i++)
         {
             Chunk c = w.chunks[i];
-            if (c.x > 4 || c.z > 4)
+            if (c.x > 6 || c.z > 6)
                 continue;
             for (unsigned int x = 0; x < region_dim::BLOCK_WIDTH; x++)
                 for (unsigned int z = 0; z < region_dim::BLOCK_WIDTH; z++)
                     for (unsigned int y = 0; y < region_dim::BLOCK_HEIGHT; y++)
                     {
                         int worldIndex = (y * 16 + z) * 16 + x;
-                        if (c.blockData[worldIndex]  > 0)
+                        if (c.blockData[worldIndex]  > 0 && c.drawData[worldIndex])
                         {
                             int id = c.blockData[worldIndex];
                             if (voxelMap.count(id))

@@ -123,7 +123,6 @@ void Voxel::Load(GLuint programID, int ID)
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec2> uvs;
     std::vector<glm::vec3> normals;
-    bool res = loadOBJ("minecube.obj", vertices, uvs, normals);
 
     vertices.clear();
     uvs.clear();
@@ -221,10 +220,6 @@ void Voxel::Load(GLuint programID, int ID)
         exit(1);
     }
 
-
-
-
-
     GenSide(topUVX,topUVY,glm::vec3(0,1,0),vertices,uvs,normals);
     GenSide(bottomUVX,bottomUVY,glm::vec3(0,-1,0),vertices,uvs,normals);
     GenSide(sideUVX,sideUVY,glm::vec3(0,0,1),vertices,uvs,normals);
@@ -316,12 +311,6 @@ void Voxel::Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix)
     // Set our "Normal	TextureSampler" sampler to user Texture Unit 0
     glUniform1i(NormalTextureID, 1);
 
-    // Bind our normal texture in Texture Unit 2
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, SpecularTexture);
-    // Set our "Normal	TextureSampler" sampler to user Texture Unit 0
-    glUniform1i(SpecularTextureID, 2);
-
     // 1rst attribute buffer : vertices
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -358,30 +347,6 @@ void Voxel::Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix)
                 (void*)0                          // array buffer offset
                 );
 
-    // 4th attribute buffer : tangents
-    glEnableVertexAttribArray(3);
-    glBindBuffer(GL_ARRAY_BUFFER, tangentbuffer);
-    glVertexAttribPointer(
-                3,                                // attribute
-                3,                                // size
-                GL_FLOAT,                         // type
-                GL_FALSE,                         // normalized?
-                0,                                // stride
-                (void*)0                          // array buffer offset
-                );
-
-    // 5th attribute buffer : bitangents
-    glEnableVertexAttribArray(4);
-    glBindBuffer(GL_ARRAY_BUFFER, bitangentbuffer);
-    glVertexAttribPointer(
-                4,                                // attribute
-                3,                                // size
-                GL_FLOAT,                         // type
-                GL_FALSE,                         // normalized?
-                0,                                // stride
-                (void*)0                          // array buffer offset
-                );
-
     // Index buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
@@ -396,8 +361,6 @@ void Voxel::Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix)
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
-    glDisableVertexAttribArray(3);
-    glDisableVertexAttribArray(4);
 }
 
 

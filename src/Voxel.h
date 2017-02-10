@@ -15,6 +15,8 @@ public:
 
     void SetTranslation(GLfloat x, GLfloat y, GLfloat z);
 
+    void BindArrays();
+
 private:
     GLuint vertexbuffer;
     GLuint uvbuffer;
