@@ -249,7 +249,6 @@ void Voxel::Load(GLuint programID, int ID)
     glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
     glBufferData(GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::vec3), &indexed_normals[0], GL_STATIC_DRAW);
 
-
     // Generate a buffer for the indices as well
     glGenBuffers(1, &elementbuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
@@ -259,13 +258,9 @@ void Voxel::Load(GLuint programID, int ID)
     // Load the texture
     //    DiffuseTexture = loadDDS("diffuse.DDS");
     DiffuseTexture = loadPNG("tex.png");
-    NormalTexture = loadBMP_custom("normal.bmp");
-    SpecularTexture = loadDDS("specular.DDS");
 
     // Get a handle for our "myTextureSampler" uniform
     DiffuseTextureID  = glGetUniformLocation(programID, "DiffuseTextureSampler");
-    NormalTextureID  = glGetUniformLocation(programID, "NormalTextureSampler");
-    SpecularTextureID  = glGetUniformLocation(programID, "SpecularTextureSampler");
 
 
     // Get a handle for our "MVP" uniform
@@ -285,8 +280,6 @@ void Voxel::Unload()
 
 void Voxel::Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix)
 {
-
-
     glm::mat4 ModelViewMatrix = ViewMatrix * ModelMatrix;
     glm::mat3 ModelView3x3Matrix = glm::mat3(ModelViewMatrix);
     glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
@@ -305,12 +298,6 @@ void Voxel::Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix)
     glBindTexture(GL_TEXTURE_2D, DiffuseTexture);
     // Set our "DiffuseTextureSampler" sampler to user Texture Unit 0
     glUniform1i(DiffuseTextureID, 0);
-
-    // Bind our normal texture in Texture Unit 1
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, NormalTexture);
-    // Set our "Normal	TextureSampler" sampler to user Texture Unit 0
-    glUniform1i(NormalTextureID, 1);
 
     // 1rst attribute buffer : vertices
     glEnableVertexAttribArray(0);

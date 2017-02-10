@@ -26,12 +26,7 @@ private:
     GLuint elementbuffer;
 
     GLuint DiffuseTextureID;
-    GLuint NormalTextureID;
-    GLuint SpecularTextureID;
-
     GLuint DiffuseTexture;
-    GLuint NormalTexture;
-    GLuint SpecularTexture;
 
     GLuint MatrixID;
     GLuint ViewMatrixID;
