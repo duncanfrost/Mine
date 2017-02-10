@@ -11,10 +11,34 @@ Voxel::Voxel()
 }
 
 
-void GenSide(int gridX, int gridY,
-             glm::vec3 normal,
+void GenUVS(int gridX, int gridY, glm::vec3 normal, std::vector<glm::vec2> &uvs)
+{
+    float blocksize = 16.0f/256.0f;
+    if (normal[0] == -1 || normal[2] == 1 || normal[1] == 1)
+    {
+        uvs.push_back(glm::vec2(gridX*blocksize,-1 +(gridY+1)*blocksize));
+        uvs.push_back(glm::vec2((gridX+1)*blocksize,-1 +(gridY+1)*blocksize));
+        uvs.push_back(glm::vec2(gridX*blocksize,-1 + gridY*blocksize));
+
+        uvs.push_back(glm::vec2((gridX)*blocksize,-1 + (gridY)*blocksize));
+        uvs.push_back(glm::vec2((gridX+1)*blocksize,-1 +(gridY+1)*blocksize));
+        uvs.push_back(glm::vec2((gridX+1)*blocksize,-1 +(gridY)*blocksize));
+    }
+    else
+    {
+        uvs.push_back(glm::vec2((gridX+1)*blocksize,-1 +(gridY+1)*blocksize));
+        uvs.push_back(glm::vec2((gridX+1)*blocksize,-1 +(gridY)*blocksize));
+        uvs.push_back(glm::vec2(gridX*blocksize,-1 +(gridY+1)*blocksize));
+
+        uvs.push_back(glm::vec2((gridX)*blocksize,-1 +(gridY+1)*blocksize));
+        uvs.push_back(glm::vec2((gridX+1)*blocksize,-1 +(gridY)*blocksize));
+        uvs.push_back(glm::vec2(gridX*blocksize,-1 +(gridY)*blocksize));
+    }
+}
+
+
+void GenSide(glm::vec3 normal,
              std::vector<glm::vec3> &vertices,
-             std::vector<glm::vec2> &uvs,
              std::vector<glm::vec3> &normals
              )
 
@@ -56,9 +80,6 @@ void GenSide(int gridX, int gridY,
         otherindex2 = tmp;
     }
 
-
-
-
     glm::vec3 inputVec;
     inputVec[otherindex1] = -0.5;
     inputVec[otherindex2] = -0.5;
@@ -66,8 +87,6 @@ void GenSide(int gridX, int gridY,
 
     vertices.push_back(inputVec);
 
-
-
     inputVec[otherindex2] = 0.5;
     vertices.push_back(inputVec);
 
@@ -92,30 +111,6 @@ void GenSide(int gridX, int gridY,
     normals.push_back(normal);
     normals.push_back(normal);
     normals.push_back(normal);
-
-    float blocksize = 16.0f/256.0f;
-
-
-    if (normal[0] == -1 || normal[2] == 1 || normal[1] == 1)
-    {
-        uvs.push_back(glm::vec2(gridX*blocksize,-1 +(gridY+1)*blocksize));
-        uvs.push_back(glm::vec2((gridX+1)*blocksize,-1 +(gridY+1)*blocksize));
-        uvs.push_back(glm::vec2(gridX*blocksize,-1 + gridY*blocksize));
-
-        uvs.push_back(glm::vec2((gridX)*blocksize,-1 + (gridY)*blocksize));
-        uvs.push_back(glm::vec2((gridX+1)*blocksize,-1 +(gridY+1)*blocksize));
-        uvs.push_back(glm::vec2((gridX+1)*blocksize,-1 +(gridY)*blocksize));
-    }
-    else
-    {
-        uvs.push_back(glm::vec2((gridX+1)*blocksize,-1 +(gridY+1)*blocksize));
-        uvs.push_back(glm::vec2((gridX+1)*blocksize,-1 +(gridY)*blocksize));
-        uvs.push_back(glm::vec2(gridX*blocksize,-1 +(gridY+1)*blocksize));
-
-        uvs.push_back(glm::vec2((gridX)*blocksize,-1 +(gridY+1)*blocksize));
-        uvs.push_back(glm::vec2((gridX+1)*blocksize,-1 +(gridY)*blocksize));
-        uvs.push_back(glm::vec2(gridX*blocksize,-1 +(gridY)*blocksize));
-    }
 }
 
 void Voxel::Load(GLuint programID, int ID)
@@ -220,12 +215,18 @@ void Voxel::Load(GLuint programID, int ID)
         exit(1);
     }
 
-    GenSide(topUVX,topUVY,glm::vec3(0,1,0),vertices,uvs,normals);
-    GenSide(bottomUVX,bottomUVY,glm::vec3(0,-1,0),vertices,uvs,normals);
-    GenSide(sideUVX,sideUVY,glm::vec3(0,0,1),vertices,uvs,normals);
-    GenSide(sideUVX,sideUVY,glm::vec3(1,0,0),vertices,uvs,normals);
-    GenSide(sideUVX,sideUVY,glm::vec3(-1,0,0),vertices,uvs,normals);
-    GenSide(sideUVX,sideUVY,glm::vec3(0,0,-1),vertices,uvs,normals);
+    GenSide(glm::vec3(0,1,0),vertices,normals);
+    GenSide(glm::vec3(0,-1,0),vertices,normals);
+    GenSide(glm::vec3(0,0,1),vertices,normals);
+    GenSide(glm::vec3(1,0,0),vertices,normals);
+    GenSide(glm::vec3(-1,0,0),vertices,normals);
+    GenSide(glm::vec3(0,0,-1),vertices,normals);
+    GenUVS(topUVX,topUVY,glm::vec3(0,1,0),uvs);
+    GenUVS(bottomUVX,bottomUVY,glm::vec3(0,-1,0),uvs);
+    GenUVS(sideUVX,sideUVY,glm::vec3(0,0,1),uvs);
+    GenUVS(sideUVX,sideUVY,glm::vec3(1,0,0),uvs);
+    GenUVS(sideUVX,sideUVY,glm::vec3(-1,0,0),uvs);
+    GenUVS(sideUVX,sideUVY,glm::vec3(0,0,-1),uvs);
 
 
     std::vector<glm::vec3> indexed_vertices;
