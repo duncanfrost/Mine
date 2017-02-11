@@ -34,6 +34,15 @@ using namespace glm;
 #include <set>
 #include "../src/libanvil/region_file_reader.hpp"
 
+vec3 ExtractCameraPos_NoScale(const mat4 & a_modelView)
+{
+  mat3 rotMat(a_modelView);
+  vec3 d(a_modelView[3]);
+
+  vec3 retVec = -d * rotMat;
+  return retVec;
+}
+
 
 
 void APIENTRY DebugOutputCallback(GLenum source, GLenum type, GLuint id,
@@ -176,13 +185,13 @@ int main( void )
     double lastTime = glfwGetTime();
     int nbFrames = 0;
 
-//    int ids[] = {2,7,1,3,4,13,16,56,15,73,21,11,14,9,12,18,17,82,49,48};
-    int ids[] = {2};
+    int ids[] = {2,7,1,3,4,13,16,56,15,73,21,11,14,9,12,18,17,82,49,48};
+//    int ids[] = {2};
     std::map<int, Voxel> voxelMap;
     std::set<int> usedIDs;
     Voxel v;
     std::vector<int> idVector;
-    for (unsigned int i = 0; i < 1; i++)
+    for (unsigned int i = 0; i < 20; i++)
     {
         int id = ids[i];
         v.Load(programID,id);
@@ -261,7 +270,7 @@ int main( void )
         nbFrames++;
         if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1sec ago
             // printf and reset
-            printf("%f ms/frame\n", 1000.0/double(nbFrames));
+            std::cout << 1000.0/double(nbFrames) << "ms per frame" << std::endl;
             nbFrames = 0;
             lastTime += 1.0;
         }
@@ -280,16 +289,16 @@ int main( void )
         glm::mat4 ViewMatrix = getViewMatrix();
 
 
+        glm::vec3 trans = ExtractCameraPos_NoScale(ViewMatrix);
 
-
-        glm::vec3 lightPos = glm::vec3(4*16,4,4*16);
+        glm::vec3 lightPos = trans;
         glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
 
 
         for (int i = 0; i < w.chunks.size(); i++)
         {
             Chunk c = w.chunks[i];
-            if (c.x > 2 || c.z > 2)
+            if (c.x > 4 || c.z > 4)
                 continue;
             for (unsigned int x = 0; x < region_dim::BLOCK_WIDTH; x++)
                 for (unsigned int z = 0; z < region_dim::BLOCK_WIDTH; z++)
@@ -304,8 +313,8 @@ int main( void )
 //                                Voxel vDraw = voxelMap.at(id);
 //                                vDraw.SetTranslation(16*c.x + x,offset-y,16*c.z + z);
 //                                vDraw.Draw(ProjectionMatrix, ViewMatrix);
-                                vr.SetTranslation(16*c.x + x,offset-y,16*c.z + z);
-                                vr.Draw(ProjectionMatrix, ViewMatrix,id);
+                                glm::vec3 translation(16*c.x + x,offset-y,16*c.z + z);
+                                vr.Draw(ProjectionMatrix, ViewMatrix,translation,id);
                             }
                             else if (!ignored.count(id))
                             {

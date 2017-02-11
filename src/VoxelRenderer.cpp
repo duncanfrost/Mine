@@ -142,9 +142,18 @@ void VoxelRenderer::Load(GLuint programID, std::vector<int> blockIDs)
     GenUVS(sideUVX,sideUVY,glm::vec3(-1,0,0),uvs_temp);
     GenUVS(sideUVX,sideUVY,glm::vec3(0,0,-1),uvs_temp);
 
-//    indexVBO( vertices, uvs_temp, normals,
-//          indices, indexed_vertices, indexed_uvs_temp, indexed_normals);
+    indexVBO( vertices, uvs_temp, normals,
+          indices, indexed_vertices, indexed_uvs_temp, indexed_normals);
 
+    glGenBuffers(1, &vertexbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+    glBufferData(GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3),
+                 &indexed_vertices[0], GL_STATIC_DRAW);
+
+    glGenBuffers(1, &normalbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+    glBufferData(GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::vec3),
+                 &indexed_normals[0], GL_STATIC_DRAW);
 
 
 
@@ -252,28 +261,9 @@ void VoxelRenderer::Load(GLuint programID, std::vector<int> blockIDs)
         std::vector<glm::vec2> indexed_uvs;
 
         indexVBO( vertices, uvs, normals,
-              indices, indexed_vertices, indexed_uvs, indexed_normals);
+                  indices, indexed_vertices, indexed_uvs, indexed_normals);
 
 
-//        if (ID == 2)
-//        {
-//            std::cout << std::endl;
-//            std::cout << "Uvs for ID 2 " << std::endl;
-//            for (unsigned int i = 0; i < indexed_uvs.size(); i++)
-//                std::cout << indexed_uvs[i][0] << " " << indexed_uvs[i][1] << std::endl;
-//            exit(1);
-//        }
-
-
-        glGenBuffers(1, &vertexbuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        glBufferData(GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3),
-                     &indexed_vertices[0], GL_STATIC_DRAW);
-
-        glGenBuffers(1, &normalbuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-        glBufferData(GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::vec3),
-                     &indexed_normals[0], GL_STATIC_DRAW);
 
         GLuint uvbuffer;
         glGenBuffers(1, &uvbuffer);
@@ -295,10 +285,10 @@ void VoxelRenderer::Load(GLuint programID, std::vector<int> blockIDs)
     DiffuseTextureID  = glGetUniformLocation(programID, "DiffuseTextureSampler");
 
     //    // Get a handle for our "MVP" uniform
-        MatrixID = glGetUniformLocation(programID, "MVP");
-        ViewMatrixID = glGetUniformLocation(programID, "V");
-        ModelMatrixID = glGetUniformLocation(programID, "M");
-        ModelView3x3MatrixID = glGetUniformLocation(programID, "MV3x3");
+    MatrixID = glGetUniformLocation(programID, "MVP");
+    ViewMatrixID = glGetUniformLocation(programID, "V");
+    ModelMatrixID = glGetUniformLocation(programID, "M");
+    ModelView3x3MatrixID = glGetUniformLocation(programID, "MV3x3");
 
 
 }
@@ -316,9 +306,13 @@ void VoxelRenderer::Unload()
     glDeleteBuffers(1, &elementbuffer);
 }
 
-void VoxelRenderer::Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix, int ID)
+void VoxelRenderer::Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix,
+                         glm::vec3 translation, int ID)
 {
 
+    ModelMatrix[3][0] = -translation[0];
+    ModelMatrix[3][1] = -translation[1];
+    ModelMatrix[3][2] = -translation[2];
 
     glm::mat4 ModelViewMatrix = ViewMatrix * ModelMatrix;
     glm::mat3 ModelView3x3Matrix = glm::mat3(ModelViewMatrix);
@@ -336,56 +330,30 @@ void VoxelRenderer::Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix, int I
     // Bind our texture in Texture Unit 0
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, DiffuseTexture);
-//     Set our "DiffuseTextureSampler" sampler to user Texture Unit 0
+    //     Set our "DiffuseTextureSampler" sampler to user Texture Unit 0
     glUniform1i(DiffuseTextureID, 0);
 
 
     // 1rst attribute buffer : vertices
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glVertexAttribPointer(
-                0,                  // attribute
-                3,                  // size
-                GL_FLOAT,           // type
-                GL_FALSE,           // normalized?
-                0,                  // stride
-                (void*)0            // array buffer offset
-                );
+    glVertexAttribPointer(0,3, GL_FLOAT, GL_FALSE,0,(void*)0);
 
     // 2nd attribute buffer : UVs
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, uvBuffers.at(ID));
-    glVertexAttribPointer(
-                1,                                // attribute
-                2,                                // size
-                GL_FLOAT,                         // type
-                GL_FALSE,                         // normalized?
-                0,                                // stride
-                (void*)0                          // array buffer offset
-                );
+    glVertexAttribPointer(1,2, GL_FLOAT, GL_FALSE,0,(void*)0);
 
     // 3rd attribute buffer : normals
     glEnableVertexAttribArray(2);
     glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-    glVertexAttribPointer(
-                2,                                // attribute
-                3,                                // size
-                GL_FLOAT,                         // type
-                GL_FALSE,                         // normalized?
-                0,                                // stride
-                (void*)0                          // array buffer offset
-                );
+    glVertexAttribPointer(2,3, GL_FLOAT, GL_FALSE,0,(void*)0);
 
     // Index buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
     // Draw the triangles !
-    glDrawElements(
-                GL_TRIANGLES,      // mode
-                indices.size(),    // count
-                GL_UNSIGNED_SHORT, // type
-                (void*)0           // element array buffer offset
-                );
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, (void*)0);
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
@@ -395,7 +363,4 @@ void VoxelRenderer::Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix, int I
 
 void VoxelRenderer::SetTranslation(GLfloat x, GLfloat y, GLfloat z)
 {
-    ModelMatrix[3][0] = -x;
-    ModelMatrix[3][1] = -y;
-    ModelMatrix[3][2] = -z;
 }

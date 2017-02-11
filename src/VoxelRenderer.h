@@ -13,7 +13,7 @@ public:
     void Load(GLuint programID, std::vector<int> blockIDs);
     void Unload();
 
-    void Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix, int ID);
+    void Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix, glm::vec3 translation, int ID);
 
     void SetTranslation(GLfloat x, GLfloat y, GLfloat z);
 
@@ -28,7 +28,6 @@ private:
     GLuint vertexbuffer;
     GLuint normalbuffer;
     GLuint elementbuffer;
-    GLuint uvBuff2;
 
     GLuint DiffuseTextureID;
     GLuint DiffuseTexture;

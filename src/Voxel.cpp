@@ -239,15 +239,6 @@ void Voxel::Load(GLuint programID, int ID)
     indexVBO( vertices, uvs, normals,
               indices, indexed_vertices, indexed_uvs, indexed_normals);
 
-    if (ID == 2)
-    {
-        std::cout << "Uvs for ID 2 in voxel" << std::endl;
-        for (unsigned int i = 0; i < indexed_uvs.size(); i++)
-            std::cout << indexed_uvs[i][0] << " " << indexed_uvs[i][1] << std::endl;
-
-    }
-
-
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
     glBufferData(GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3), &indexed_vertices[0], GL_STATIC_DRAW);

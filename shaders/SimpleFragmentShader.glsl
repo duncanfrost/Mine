@@ -21,8 +21,8 @@ void main(){
 
     // Light emission properties
     // You probably want to put them as uniforms
-    vec3 LightColor = vec3(1,1,1);
-    float LightPower = 60.0;
+    vec3 LightColor = vec3(0.5,0.5,0.5);
+    float LightPower = 30.0;
 
     // Material properties
 
@@ -61,7 +61,7 @@ void main(){
             // Diffuse : "color" of the object
             MaterialDiffuseColor * LightColor * LightPower * cosTheta / (distance*distance) +
             // Specular : reflective highlight, like a mirror
-            MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / (distance*distance);
+            MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / (distance*distance+1);
 
     //color.rgb = vec3(0.5,0.5,0.5);
     color.a = alpha;
