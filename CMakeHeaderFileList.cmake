@@ -7,10 +7,12 @@
 
 set(HEADER_MISC
   Defines.h
+  Geometry.h
   Voxel.h
   World.h
   Chunk.h
   VoxelRenderer.h
+  Debug.h
   )
 
 set (HEADER_COMMON
