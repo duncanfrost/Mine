@@ -15,13 +15,8 @@ GLFWwindow* window;
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "../src/common/shader.hpp"
-#include "../src/common/texture.hpp"
 #include "../src/common/controls.hpp"
-#include "../src/common/objloader.hpp"
-#include "../src/common/vboindexer.hpp"
 #include "../src/common/text2D.hpp"
-#include "../src/common/tangentspace.hpp"
-#include "../src/libanvil/region_file_reader.hpp"
 
 #include "../src/Voxel.h"
 #include "../src/VoxelRenderer.h"
@@ -39,12 +34,6 @@ GLFWwindow* window;
 
 int main( void )
 {
-
-
-
-
-
-
     // Initialise GLFW
     if( !glfwInit() )
     {
@@ -71,7 +60,9 @@ int main( void )
     // Open a window and create its OpenGL context
     window = glfwCreateWindow( 1024, 768, "Mine", NULL, NULL);
     if( window == NULL ){
-        fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
+        fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, "
+                         "they are not 3.3 compatible. "
+                         "Try the 2.1 version of the tutorials.\n" );
         getchar();
         glfwTerminate();
         return -1;
@@ -125,9 +116,6 @@ int main( void )
     // Cull triangles which normal is not towards the camera
     glEnable(GL_CULL_FACE); // Not this time !
 
-    GLuint VertexArrayID;
-    glGenVertexArrays(1, &VertexArrayID);
-    glBindVertexArray(VertexArrayID);
 
     // Create and compile our GLSL program from the shaders
     GLuint programID = LoadShaders( "SimpleVertexShader.glsl", "SimpleFragmentShader.glsl" );

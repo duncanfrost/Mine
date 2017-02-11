@@ -143,7 +143,13 @@ void VoxelRenderer::Load(GLuint programID, std::vector<int> blockIDs)
     GenUVS(sideUVX,sideUVY,glm::vec3(0,0,-1),uvs_temp);
 
     indexVBO( vertices, uvs_temp, normals,
-          indices, indexed_vertices, indexed_uvs_temp, indexed_normals);
+              indices, indexed_vertices, indexed_uvs_temp, indexed_normals);
+
+
+    GLuint VertexArrayID;
+    glGenVertexArrays(1, &VertexArrayID);
+    glBindVertexArray(VertexArrayID);
+
 
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
