@@ -91,16 +91,20 @@ void computeMatricesFromInputs(){
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
 
-	// Reset mouse position for next frame
-//    glfwSetCursorPos(window, 1024/2, 768/2);
+
+    // Reset mouse position for next frame
+
 
 	// Compute new orientation
     horizontalAngle += mouseSpeed * float(lastX - xpos );
     verticalAngle   = verticalAngle + mouseSpeed * float( lastY - ypos );
 
-
+#ifdef NDEBUG
     lastX = xpos;
     lastY = ypos;
+#else
+    glfwSetCursorPos(window, 1024/2, 768/2);
+#endif
 
 
 

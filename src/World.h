@@ -15,6 +15,7 @@ public:
 
     void ReadFromFile(std::string path, std::set<int> validIDs);
 
-    void Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix, float offset, VoxelRenderer vr);
+    void Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix, float offset,
+              VoxelRenderer vr);
 
 };

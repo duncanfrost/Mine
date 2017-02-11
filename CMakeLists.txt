@@ -46,7 +46,7 @@ endif()
 #----------------------------------------------------------------------
 # use sse3 instruction set
 #SET(CMAKE_CXX_FLAGS "-Wall -Werror")
-SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -fopenmp -msse3")
+SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -fopenmp -msse3")
 SET(CMAKE_CXX_FLAGS_DEBUG "-g -msse3 -DNDEBUG")
 
 

@@ -28,7 +28,7 @@ Chunk::Chunk()
 
 void Chunk::ComputeDrawData()
 {
-    std::cout << "Computing draw data" << std::endl;
+//    std::cout << "Computing draw data" << std::endl;
     for (unsigned int x = 0; x < region_dim::BLOCK_WIDTH; x++)
         for (unsigned int z = 0; z < region_dim::BLOCK_WIDTH; z++)
             for (unsigned int y = 0; y < region_dim::BLOCK_HEIGHT; y++)
