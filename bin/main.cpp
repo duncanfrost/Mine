@@ -194,18 +194,12 @@ int main( void )
         glUseProgram(programID);
 
         // Compute the MVP matrix from keyboard and mouse input
-        computeMatricesFromInputs();
+        w.UpdatePlayerFromInputs(window);
         int offset = getOffset();
-        glm::mat4 ProjectionMatrix = getProjectionMatrix();
-        glm::mat4 ViewMatrix = getViewMatrix();
-
-
-        glm::vec3 trans = ExtractCameraPos_NoScale(ViewMatrix);
-
-        glm::vec3 lightPos = trans;
+        glm::vec3 lightPos = w.GetPlayerPosition();
         glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
 
-        w.Draw(ProjectionMatrix,ViewMatrix,offset,vr);
+        w.Draw(offset,vr);
         // Swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
