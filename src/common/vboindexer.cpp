@@ -80,7 +80,7 @@ struct PackedVertex{
 	glm::vec3 normal;
 	bool operator<(const PackedVertex that) const{
 		return memcmp((void*)this, (void*)&that, sizeof(PackedVertex))>0;
-	};
+    }
 };
 
 bool getSimilarVertexIndex_fast( 
@@ -109,6 +109,10 @@ void indexVBO(
 ){
 	std::map<PackedVertex,unsigned short> VertexToOutIndex;
 
+    out_indices.clear();
+    out_normals.clear();
+    out_uvs.clear();;
+    out_vertices.clear();
 	// For each input vertex
 	for ( unsigned int i=0; i<in_vertices.size(); i++ ){
 

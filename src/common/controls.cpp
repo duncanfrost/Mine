@@ -40,6 +40,8 @@ bool chunkFlip = false;
 int offsetNumber = 80;
 bool offsetFlip = false;
 
+float lastX = 1024/2, lastY = 768 /2;
+
 int getChunkNumber()
 {
     // Strafe left
@@ -90,13 +92,17 @@ void computeMatricesFromInputs(){
 	glfwGetCursorPos(window, &xpos, &ypos);
 
 	// Reset mouse position for next frame
-	glfwSetCursorPos(window, 1024/2, 768/2);
+//    glfwSetCursorPos(window, 1024/2, 768/2);
 
 	// Compute new orientation
-    horizontalAngle += mouseSpeed * float(1024/2 - xpos );
+    horizontalAngle += mouseSpeed * float(lastX - xpos );
+    verticalAngle   = verticalAngle + mouseSpeed * float( lastY - ypos );
 
 
-    verticalAngle   = verticalAngle + mouseSpeed * float( 768/2 - ypos );
+    lastX = xpos;
+    lastY = ypos;
+
+
 
     if (verticalAngle >= 1.5)
         verticalAngle = 1.5;

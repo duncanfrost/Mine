@@ -24,6 +24,7 @@ using namespace glm;
 #include "../src/common/tangentspace.hpp"
 
 #include "../src/Voxel.h"
+#include "../src/VoxelRenderer.h"
 #include "../src/World.h"
 #include <iostream>
 
@@ -38,29 +39,29 @@ using namespace glm;
 void APIENTRY DebugOutputCallback(GLenum source, GLenum type, GLuint id,
                                   GLenum severity, GLsizei length, const GLchar* message, const void* userParam){
 
-    printf("OpenGL Debug Output message : ");
+//    printf("OpenGL Debug Output message : ");
 
-    if(source == GL_DEBUG_SOURCE_API_ARB)					printf("Source : API; ");
-    else if(source == GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB)	    printf("Source : WINDOW_SYSTEM; ");
-    else if(source == GL_DEBUG_SOURCE_SHADER_COMPILER_ARB)	printf("Source : SHADER_COMPILER; ");
-    else if(source == GL_DEBUG_SOURCE_THIRD_PARTY_ARB)		printf("Source : THIRD_PARTY; ");
-    else if(source == GL_DEBUG_SOURCE_APPLICATION_ARB)		printf("Source : APPLICATION; ");
-    else if(source == GL_DEBUG_SOURCE_OTHER_ARB)			    printf("Source : OTHER; ");
+//    if(source == GL_DEBUG_SOURCE_API_ARB)					printf("Source : API; ");
+//    else if(source == GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB)	    printf("Source : WINDOW_SYSTEM; ");
+//    else if(source == GL_DEBUG_SOURCE_SHADER_COMPILER_ARB)	printf("Source : SHADER_COMPILER; ");
+//    else if(source == GL_DEBUG_SOURCE_THIRD_PARTY_ARB)		printf("Source : THIRD_PARTY; ");
+//    else if(source == GL_DEBUG_SOURCE_APPLICATION_ARB)		printf("Source : APPLICATION; ");
+//    else if(source == GL_DEBUG_SOURCE_OTHER_ARB)			    printf("Source : OTHER; ");
 
-    if(type == GL_DEBUG_TYPE_ERROR_ARB)						printf("Type : ERROR; ");
-    else if(type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB)	printf("Type : DEPRECATED_BEHAVIOR; ");
-    else if(type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB)	    printf("Type : UNDEFINED_BEHAVIOR; ");
-    else if(type == GL_DEBUG_TYPE_PORTABILITY_ARB)			printf("Type : PORTABILITY; ");
-    else if(type == GL_DEBUG_TYPE_PERFORMANCE_ARB)			printf("Type : PERFORMANCE; ");
-    else if(type == GL_DEBUG_TYPE_OTHER_ARB)				printf("Type : OTHER; ");
+//    if(type == GL_DEBUG_TYPE_ERROR_ARB)						printf("Type : ERROR; ");
+//    else if(type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB)	printf("Type : DEPRECATED_BEHAVIOR; ");
+//    else if(type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB)	    printf("Type : UNDEFINED_BEHAVIOR; ");
+//    else if(type == GL_DEBUG_TYPE_PORTABILITY_ARB)			printf("Type : PORTABILITY; ");
+//    else if(type == GL_DEBUG_TYPE_PERFORMANCE_ARB)			printf("Type : PERFORMANCE; ");
+//    else if(type == GL_DEBUG_TYPE_OTHER_ARB)				printf("Type : OTHER; ");
 
-    if(severity == GL_DEBUG_SEVERITY_HIGH_ARB)				printf("Severity : HIGH; ");
-    else if(severity == GL_DEBUG_SEVERITY_MEDIUM_ARB)		printf("Severity : MEDIUM; ");
-    else if(severity == GL_DEBUG_SEVERITY_LOW_ARB)			printf("Severity : LOW; ");
+//    if(severity == GL_DEBUG_SEVERITY_HIGH_ARB)				printf("Severity : HIGH; ");
+//    else if(severity == GL_DEBUG_SEVERITY_MEDIUM_ARB)		printf("Severity : MEDIUM; ");
+//    else if(severity == GL_DEBUG_SEVERITY_LOW_ARB)			printf("Severity : LOW; ");
 
-    // You can set a breakpoint here ! Your debugger will stop the program,
-    // and the callstack will immediately show you the offending call.
-    printf("Message : %s\n", message);
+//    // You can set a breakpoint here ! Your debugger will stop the program,
+//    // and the callstack will immediately show you the offending call.
+//    printf("Message : %s\n", message);
 }
 
 int main( void )
@@ -70,7 +71,7 @@ int main( void )
 
     World w;
     Voxel v1;
-
+    VoxelRenderer vr2;
 
 
 
@@ -138,7 +139,7 @@ int main( void )
     // Ensure we can capture the escape key being pressed below
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     // Hide the mouse and enable unlimited mouvement
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+//    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // Set the mouse at the center of the screen
     glfwPollEvents();
@@ -175,16 +176,19 @@ int main( void )
     double lastTime = glfwGetTime();
     int nbFrames = 0;
 
-    int ids[] = {7,1,3,4,2,13,16,56,15,73,21,11,14,9,12,18,17,82,49,48};
+//    int ids[] = {2,7,1,3,4,13,16,56,15,73,21,11,14,9,12,18,17,82,49,48};
+    int ids[] = {2};
     std::map<int, Voxel> voxelMap;
     std::set<int> usedIDs;
     Voxel v;
-    for (unsigned int i = 0; i < 20; i++)
+    std::vector<int> idVector;
+    for (unsigned int i = 0; i < 1; i++)
     {
         int id = ids[i];
         v.Load(programID,id);
         voxelMap.insert(std::make_pair(id,v));
         usedIDs.insert(id);
+        idVector.push_back(id);
     }
     // Read our .obj file
 
@@ -197,6 +201,11 @@ int main( void )
     ignored.insert(8);
     ignored.insert(83);
     ignored.insert(40);
+
+    VoxelRenderer vr;
+    vr.Load(programID,idVector);
+
+
 
     // Enable blending
     //    glEnable(GL_BLEND);
@@ -213,10 +222,7 @@ int main( void )
             // this keeps an exception from being thrown
             // when a non-existant chunk is requested
             if(!reader.is_filled(rx, rz))
-            {
-                std::cout << "No blocks here" << std::endl;
                 continue;
-            }
 
             // if everything goes well, retrieve the block/height data
             std::vector<int> blocks = reader.get_blocks_at(rx, rz);
@@ -283,7 +289,7 @@ int main( void )
         for (int i = 0; i < w.chunks.size(); i++)
         {
             Chunk c = w.chunks[i];
-            if (c.x > 6 || c.z > 6)
+            if (c.x > 2 || c.z > 2)
                 continue;
             for (unsigned int x = 0; x < region_dim::BLOCK_WIDTH; x++)
                 for (unsigned int z = 0; z < region_dim::BLOCK_WIDTH; z++)
@@ -295,9 +301,11 @@ int main( void )
                             int id = c.blockData[worldIndex];
                             if (voxelMap.count(id))
                             {
-                                Voxel vDraw = voxelMap.at(id);
-                                vDraw.SetTranslation(16*c.x + x,offset-y,16*c.z + z);
-                                vDraw.Draw(ProjectionMatrix, ViewMatrix);
+//                                Voxel vDraw = voxelMap.at(id);
+//                                vDraw.SetTranslation(16*c.x + x,offset-y,16*c.z + z);
+//                                vDraw.Draw(ProjectionMatrix, ViewMatrix);
+                                vr.SetTranslation(16*c.x + x,offset-y,16*c.z + z);
+                                vr.Draw(ProjectionMatrix, ViewMatrix,id);
                             }
                             else if (!ignored.count(id))
                             {

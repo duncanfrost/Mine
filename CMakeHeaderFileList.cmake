@@ -10,6 +10,7 @@ set(HEADER_MISC
   Voxel.h
   World.h
   Chunk.h
+  VoxelRenderer.h
   )
 
 set (HEADER_COMMON

@@ -1,17 +1,16 @@
-#include "Voxel.h"
+#include "VoxelRenderer.h"
 #include "common/objloader.hpp"
 #include "common/vboindexer.hpp"
 #include "common/tangentspace.hpp"
 #include "common/texture.hpp"
 #include <iostream>
 
-Voxel::Voxel()
+VoxelRenderer::VoxelRenderer()
 {
     ModelMatrix = glm::mat4(1.0);
 }
 
-
-void GenUVS(int gridX, int gridY, glm::vec3 normal, std::vector<glm::vec2> &uvs)
+void VoxelRenderer::GenUVS(int gridX, int gridY, glm::vec3 normal, std::vector<glm::vec2> &uvs)
 {
     float blocksize = 16.0f/256.0f;
     if (normal[0] == -1 || normal[2] == 1 || normal[1] == 1)
@@ -37,10 +36,8 @@ void GenUVS(int gridX, int gridY, glm::vec3 normal, std::vector<glm::vec2> &uvs)
 }
 
 
-void GenSide(glm::vec3 normal,
-             std::vector<glm::vec3> &vertices,
-             std::vector<glm::vec3> &normals
-             )
+void VoxelRenderer::GenSide(glm::vec3 normal, std::vector<glm::vec3> &vertices,
+                            std::vector<glm::vec3> &normals)
 
 {
 
@@ -80,6 +77,7 @@ void GenSide(glm::vec3 normal,
         otherindex2 = tmp;
     }
 
+
     glm::vec3 inputVec;
     inputVec[otherindex1] = -0.5;
     inputVec[otherindex2] = -0.5;
@@ -113,107 +111,11 @@ void GenSide(glm::vec3 normal,
     normals.push_back(normal);
 }
 
-void Voxel::Load(GLuint programID, int ID)
+void VoxelRenderer::Load(GLuint programID, std::vector<int> blockIDs)
 {
     std::vector<glm::vec3> vertices;
-    std::vector<glm::vec2> uvs;
     std::vector<glm::vec3> normals;
 
-    vertices.clear();
-    uvs.clear();
-    normals.clear();
-
-    int topUVX, topUVY;
-    int sideUVX, sideUVY;
-    int bottomUVX, bottomUVY;
-
-    switch (ID) {
-    case 7:
-        topUVX = topUVY = sideUVX = sideUVY = bottomUVX = bottomUVY = 1;
-        break;
-    case 1:
-        topUVX = bottomUVX = sideUVX = 1;
-        topUVY = bottomUVY = sideUVY = 0;
-        break;
-    case 3:
-        topUVX = bottomUVX = sideUVX = 2;
-        topUVY = bottomUVY = sideUVY = 0;
-        break;
-    case 2:
-        sideUVX = 3;
-        topUVX = 0;
-        bottomUVX = 2;
-        sideUVY = topUVY = bottomUVY = 0;
-        break;
-    case 13:
-        topUVX = bottomUVX = sideUVX = 3;
-        topUVY = bottomUVY = sideUVY = 1;
-        break;
-    case 15:
-        topUVX = bottomUVX = sideUVX = 1;
-        topUVY = bottomUVY = sideUVY = 2;
-        break;
-    case 16:
-        topUVX = bottomUVX = sideUVX = 2;
-        topUVY = bottomUVY = sideUVY = 2;
-        break;
-    case 56:
-        topUVX = bottomUVX = sideUVX = 2;
-        topUVY = bottomUVY = sideUVY = 3;
-        break;
-    case 21:
-        topUVX = bottomUVX = sideUVX = 0;
-        topUVY = bottomUVY = sideUVY = 10;
-        break;
-    case 11:
-        topUVX = bottomUVX = sideUVX = 14;
-        topUVY = bottomUVY = sideUVY = 14;
-        break;
-    case 73:
-        topUVX = bottomUVX = sideUVX = 3;
-        topUVY = bottomUVY = sideUVY = 3;
-        break;
-    case 14:
-        topUVX = bottomUVX = sideUVX = 0;
-        topUVY = bottomUVY = sideUVY = 2;
-        break;
-    case 9:
-        topUVX = bottomUVX = sideUVX = 0;
-        topUVY = bottomUVY = sideUVY = 9;
-        break;
-    case 12:
-        topUVX = bottomUVX = sideUVX = 1;
-        topUVY = bottomUVY = sideUVY = 2;
-        break;
-    case 18:
-        topUVX = bottomUVX = sideUVX = 5;
-        topUVY = bottomUVY = sideUVY = 3;
-        break;
-    case 82:
-        topUVX = bottomUVX = sideUVX = 8;
-        topUVY = bottomUVY = sideUVY = 4;
-        break;
-    case 49:
-        topUVX = bottomUVX = sideUVX = 5;
-        topUVY = bottomUVY = sideUVY = 2;
-        break;
-    case 48:
-        topUVX = bottomUVX = sideUVX = 4;
-        topUVY = bottomUVY = sideUVY = 2;
-        break;
-    case 4:
-        topUVX = bottomUVX = sideUVX = 0;
-        topUVY = bottomUVY = sideUVY = 1;
-        break;
-    case 17:
-        topUVY = bottomUVY = sideUVY = 1;
-        topUVX = bottomUVX = 5;
-        sideUVX = 4;
-        break;
-    default:
-        std::cout << "I don't have uv coordinates for this block" << std::endl;
-        exit(1);
-    }
 
     GenSide(glm::vec3(0,1,0),vertices,normals);
     GenSide(glm::vec3(0,-1,0),vertices,normals);
@@ -221,76 +123,203 @@ void Voxel::Load(GLuint programID, int ID)
     GenSide(glm::vec3(1,0,0),vertices,normals);
     GenSide(glm::vec3(-1,0,0),vertices,normals);
     GenSide(glm::vec3(0,0,-1),vertices,normals);
-    GenUVS(topUVX,topUVY,glm::vec3(0,1,0),uvs);
-    GenUVS(bottomUVX,bottomUVY,glm::vec3(0,-1,0),uvs);
-    GenUVS(sideUVX,sideUVY,glm::vec3(0,0,1),uvs);
-    GenUVS(sideUVX,sideUVY,glm::vec3(1,0,0),uvs);
-    GenUVS(sideUVX,sideUVY,glm::vec3(-1,0,0),uvs);
-    GenUVS(sideUVX,sideUVY,glm::vec3(0,0,-1),uvs);
-
-
 
 
     std::vector<glm::vec3> indexed_vertices;
-    std::vector<glm::vec2> indexed_uvs;
     std::vector<glm::vec3> indexed_normals;
+    std::vector<glm::vec2> indexed_uvs_temp;
 
 
-    indexVBO( vertices, uvs, normals,
+    int topUVX, topUVY;
+    int sideUVX, sideUVY;
+    int bottomUVX, bottomUVY;
+
+    std::vector<glm::vec2> uvs_temp;
+    GenUVS(topUVX,topUVY,glm::vec3(0,1,0),uvs_temp);
+    GenUVS(bottomUVX,bottomUVY,glm::vec3(0,-1,0),uvs_temp);
+    GenUVS(sideUVX,sideUVY,glm::vec3(0,0,1),uvs_temp);
+    GenUVS(sideUVX,sideUVY,glm::vec3(1,0,0),uvs_temp);
+    GenUVS(sideUVX,sideUVY,glm::vec3(-1,0,0),uvs_temp);
+    GenUVS(sideUVX,sideUVY,glm::vec3(0,0,-1),uvs_temp);
+
+//    indexVBO( vertices, uvs_temp, normals,
+//          indices, indexed_vertices, indexed_uvs_temp, indexed_normals);
+
+
+
+
+    for (int i = 0; i < blockIDs.size(); i++)
+    {
+        int ID = blockIDs[i];
+        switch (ID) {
+        case 7:
+            topUVX = topUVY = sideUVX = sideUVY = bottomUVX = bottomUVY = 1;
+            break;
+        case 1:
+            topUVX = bottomUVX = sideUVX = 1;
+            topUVY = bottomUVY = sideUVY = 0;
+            break;
+        case 3:
+            topUVX = bottomUVX = sideUVX = 2;
+            topUVY = bottomUVY = sideUVY = 0;
+            break;
+        case 2:
+            sideUVX = 3;
+            topUVX = 0;
+            bottomUVX = 2;
+            sideUVY = topUVY = bottomUVY = 0;
+            break;
+        case 13:
+            topUVX = bottomUVX = sideUVX = 3;
+            topUVY = bottomUVY = sideUVY = 1;
+            break;
+        case 15:
+            topUVX = bottomUVX = sideUVX = 1;
+            topUVY = bottomUVY = sideUVY = 2;
+            break;
+        case 16:
+            topUVX = bottomUVX = sideUVX = 2;
+            topUVY = bottomUVY = sideUVY = 2;
+            break;
+        case 56:
+            topUVX = bottomUVX = sideUVX = 2;
+            topUVY = bottomUVY = sideUVY = 3;
+            break;
+        case 21:
+            topUVX = bottomUVX = sideUVX = 0;
+            topUVY = bottomUVY = sideUVY = 10;
+            break;
+        case 11:
+            topUVX = bottomUVX = sideUVX = 14;
+            topUVY = bottomUVY = sideUVY = 14;
+            break;
+        case 73:
+            topUVX = bottomUVX = sideUVX = 3;
+            topUVY = bottomUVY = sideUVY = 3;
+            break;
+        case 14:
+            topUVX = bottomUVX = sideUVX = 0;
+            topUVY = bottomUVY = sideUVY = 2;
+            break;
+        case 9:
+            topUVX = bottomUVX = sideUVX = 0;
+            topUVY = bottomUVY = sideUVY = 9;
+            break;
+        case 12:
+            topUVX = bottomUVX = sideUVX = 1;
+            topUVY = bottomUVY = sideUVY = 2;
+            break;
+        case 18:
+            topUVX = bottomUVX = sideUVX = 5;
+            topUVY = bottomUVY = sideUVY = 3;
+            break;
+        case 82:
+            topUVX = bottomUVX = sideUVX = 8;
+            topUVY = bottomUVY = sideUVY = 4;
+            break;
+        case 49:
+            topUVX = bottomUVX = sideUVX = 5;
+            topUVY = bottomUVY = sideUVY = 2;
+            break;
+        case 48:
+            topUVX = bottomUVX = sideUVX = 4;
+            topUVY = bottomUVY = sideUVY = 2;
+            break;
+        case 4:
+            topUVX = bottomUVX = sideUVX = 0;
+            topUVY = bottomUVY = sideUVY = 1;
+            break;
+        case 17:
+            topUVY = bottomUVY = sideUVY = 1;
+            topUVX = bottomUVX = 5;
+            sideUVX = 4;
+            break;
+        default:
+            std::cout << "I don't have uv coordinates for this block" << std::endl;
+            exit(1);
+        }
+
+
+        std::vector<glm::vec2> uvs;
+        GenUVS(topUVX,topUVY,glm::vec3(0,1,0),uvs);
+        GenUVS(bottomUVX,bottomUVY,glm::vec3(0,-1,0),uvs);
+        GenUVS(sideUVX,sideUVY,glm::vec3(0,0,1),uvs);
+        GenUVS(sideUVX,sideUVY,glm::vec3(1,0,0),uvs);
+        GenUVS(sideUVX,sideUVY,glm::vec3(-1,0,0),uvs);
+        GenUVS(sideUVX,sideUVY,glm::vec3(0,0,-1),uvs);
+
+
+        std::vector<glm::vec2> indexed_uvs;
+
+        indexVBO( vertices, uvs, normals,
               indices, indexed_vertices, indexed_uvs, indexed_normals);
 
-    if (ID == 2)
-    {
-        std::cout << "Uvs for ID 2 in voxel" << std::endl;
-        for (unsigned int i = 0; i < indexed_uvs.size(); i++)
-            std::cout << indexed_uvs[i][0] << " " << indexed_uvs[i][1] << std::endl;
+
+//        if (ID == 2)
+//        {
+//            std::cout << std::endl;
+//            std::cout << "Uvs for ID 2 " << std::endl;
+//            for (unsigned int i = 0; i < indexed_uvs.size(); i++)
+//                std::cout << indexed_uvs[i][0] << " " << indexed_uvs[i][1] << std::endl;
+//            exit(1);
+//        }
+
+
+        glGenBuffers(1, &vertexbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glBufferData(GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3),
+                     &indexed_vertices[0], GL_STATIC_DRAW);
+
+        glGenBuffers(1, &normalbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+        glBufferData(GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::vec3),
+                     &indexed_normals[0], GL_STATIC_DRAW);
+
+        GLuint uvbuffer;
+        glGenBuffers(1, &uvbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+        glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size() * sizeof(glm::vec2),
+                     &indexed_uvs[0], GL_STATIC_DRAW);
+
+        uvBuffers.insert(std::make_pair(ID,uvbuffer));
 
     }
-
-
-    glGenBuffers(1, &vertexbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3), &indexed_vertices[0], GL_STATIC_DRAW);
-
-    glGenBuffers(1, &uvbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-    glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size() * sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
-
-    glGenBuffers(1, &normalbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-    glBufferData(GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::vec3), &indexed_normals[0], GL_STATIC_DRAW);
-
     // Generate a buffer for the indices as well
     glGenBuffers(1, &elementbuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0] , GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() *
+                 sizeof(unsigned short), &indices[0] , GL_STATIC_DRAW);
 
 
-    // Load the texture
-    //    DiffuseTexture = loadDDS("diffuse.DDS");
     DiffuseTexture = loadPNG("tex.png");
-
-    // Get a handle for our "myTextureSampler" uniform
     DiffuseTextureID  = glGetUniformLocation(programID, "DiffuseTextureSampler");
 
+    //    // Get a handle for our "MVP" uniform
+        MatrixID = glGetUniformLocation(programID, "MVP");
+        ViewMatrixID = glGetUniformLocation(programID, "V");
+        ModelMatrixID = glGetUniformLocation(programID, "M");
+        ModelView3x3MatrixID = glGetUniformLocation(programID, "MV3x3");
 
-    // Get a handle for our "MVP" uniform
-    MatrixID = glGetUniformLocation(programID, "MVP");
-    ViewMatrixID = glGetUniformLocation(programID, "V");
-    ModelMatrixID = glGetUniformLocation(programID, "M");
-    ModelView3x3MatrixID = glGetUniformLocation(programID, "MV3x3");
+
 }
 
-void Voxel::Unload()
+
+
+
+void VoxelRenderer::Unload()
 {
     glDeleteBuffers(1, &vertexbuffer);
-    glDeleteBuffers(1, &uvbuffer);
+    for (std::map<int, GLuint>::iterator it = uvBuffers.begin();
+         it != uvBuffers.end(); it++)
+        glDeleteBuffers(1, &it->second);
     glDeleteBuffers(1, &normalbuffer);
     glDeleteBuffers(1, &elementbuffer);
 }
 
-void Voxel::Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix)
+void VoxelRenderer::Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix, int ID)
 {
+
+
     glm::mat4 ModelViewMatrix = ViewMatrix * ModelMatrix;
     glm::mat3 ModelView3x3Matrix = glm::mat3(ModelViewMatrix);
     glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
@@ -307,8 +336,9 @@ void Voxel::Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix)
     // Bind our texture in Texture Unit 0
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, DiffuseTexture);
-    // Set our "DiffuseTextureSampler" sampler to user Texture Unit 0
+//     Set our "DiffuseTextureSampler" sampler to user Texture Unit 0
     glUniform1i(DiffuseTextureID, 0);
+
 
     // 1rst attribute buffer : vertices
     glEnableVertexAttribArray(0);
@@ -324,7 +354,7 @@ void Voxel::Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix)
 
     // 2nd attribute buffer : UVs
     glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, uvBuffers.at(ID));
     glVertexAttribPointer(
                 1,                                // attribute
                 2,                                // size
@@ -363,7 +393,7 @@ void Voxel::Draw(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix)
 }
 
 
-void Voxel::SetTranslation(GLfloat x, GLfloat y, GLfloat z)
+void VoxelRenderer::SetTranslation(GLfloat x, GLfloat y, GLfloat z)
 {
     ModelMatrix[3][0] = -x;
     ModelMatrix[3][1] = -y;

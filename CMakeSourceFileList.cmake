@@ -7,6 +7,7 @@
 set(SRC_MISC
     Defines.cpp
     Voxel.cpp
+    VoxelRenderer.cpp
     World.cpp
     Chunk.cpp
     )
