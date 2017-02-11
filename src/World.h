@@ -19,6 +19,8 @@ public:
 
     void Draw(float offset, VoxelRenderer vr);
     void UpdatePlayerFromInputs(GLFWwindow *window);
+    void UpdatePlayerEngine();
+    void UpdateDeltaTime();
 
     glm::vec3 GetPlayerPosition()
     {
@@ -26,7 +28,14 @@ public:
     }
 
 private:
+
+    double lastTime;
+    float deltaTime;
+
+    bool runEngine;
+    bool runEnginePressed;
     glm::vec3 position;
+    glm::vec3 velocity;
     float horizontalAngle;
     float verticalAngle;
     float initialFoV;

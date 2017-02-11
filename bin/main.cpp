@@ -21,7 +21,6 @@ GLFWwindow* window;
 #include "../src/Voxel.h"
 #include "../src/VoxelRenderer.h"
 #include "../src/World.h"
-#include "../src/Geometry.h"
 #include "../src/Debug.h"
 #include <iostream>
 
@@ -182,7 +181,7 @@ int main( void )
         nbFrames++;
         if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1sec ago
             // printf and reset
-            std::cout << 1000.0/double(nbFrames) << "ms per frame" << std::endl;
+//            std::cout << 1000.0/double(nbFrames) << "ms per frame" << std::endl;
             nbFrames = 0;
             lastTime += 1.0;
         }
@@ -194,7 +193,9 @@ int main( void )
         glUseProgram(programID);
 
         // Compute the MVP matrix from keyboard and mouse input
+        w.UpdateDeltaTime();
         w.UpdatePlayerFromInputs(window);
+        w.UpdatePlayerEngine();
         int offset = getOffset();
         glm::vec3 lightPos = w.GetPlayerPosition();
         glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);

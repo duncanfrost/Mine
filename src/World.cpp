@@ -14,6 +14,7 @@ World::World()
     mouseSpeed = 0.005f;
     lastX = 1024/2;
     lastY = 768 /2;
+    runEngine = false;
 }
 
 
@@ -83,14 +84,20 @@ void World::Draw(float offset, VoxelRenderer vr)
     }
 }
 
+void World::UpdateDeltaTime()
+{
+    double currentTime = glfwGetTime();
+    deltaTime = float(currentTime - lastTime);
+    lastTime = currentTime;
+}
+
+
 void World::UpdatePlayerFromInputs(GLFWwindow* window){
 
-    // glfwGetTime is called only once, the first time this function is called
-    static double lastTime = glfwGetTime();
 
     // Compute time difference between current and last frame
-    double currentTime = glfwGetTime();
-    float deltaTime = float(currentTime - lastTime);
+
+    std::cout << deltaTime << std::endl;
 
     // Get mouse position
     double xpos, ypos;
@@ -157,10 +164,23 @@ void World::UpdatePlayerFromInputs(GLFWwindow* window){
 
     // Strafe left
     if (glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS){
-        speed = 6;
+        speed = 8;
     }
     else
         speed = 3;
+
+
+
+    // Strafe left
+    if (glfwGetKey( window, GLFW_KEY_I ) == GLFW_PRESS)
+        runEnginePressed = true;
+
+    // Strafe left
+    if (glfwGetKey( window, GLFW_KEY_I ) == GLFW_RELEASE && runEnginePressed){
+        runEnginePressed = false;
+        runEngine = !runEngine;
+        std::cout << "RunEngine: " << runEngine << std::endl;
+    }
 
 
     float FoV = initialFoV;
@@ -176,7 +196,14 @@ void World::UpdatePlayerFromInputs(GLFWwindow* window){
                                 position+direction, // and looks here : at the same position, plus "direction"
                                 up                  // Head is up (set to 0,-1,0 to look upside-down)
                            );
+}
 
-    // For the next frame, the "last time" will be "now"
-    lastTime = currentTime;
+void World::UpdatePlayerEngine()
+{
+    if (runEngine)
+    {
+        velocity[1] -= 10*deltaTime;
+        position += velocity*deltaTime;
+    }
+
 }
