@@ -23,7 +23,7 @@
 /*
  * Region file pattern
  */
-const boost::regex region_file::PATTERN = boost::regex("r\\.([-]?[0-9]+)\\.([-]?[0-9]+)\\.mca");
+//const boost::regex region_file::PATTERN = boost::regex("r\\.([-]?[0-9]+)\\.([-]?[0-9]+)\\.mca");
 
 /*
  * Region file assignment operator
@@ -71,19 +71,20 @@ void region_file::convert_endian(std::vector<char> &data) {
  * Returns true if a specified path is a region file
  */
 bool region_file::is_region_file(const std::string &path, int &x, int &z) {
-
-	// parse the filename for coordinants
-	boost::cmatch ref;
-	std::stringstream stream;
-	std::string name = path.substr(path.find_last_of('/') + 1);
-    if(!boost::regex_match(name.c_str(), ref, PATTERN))
-        return false;
-	stream << ref[1];
-	stream >> x;
-	stream.clear();
-	stream << ref[2];
-	stream >> z;
 	return true;
+
+//	// parse the filename for coordinants
+//	boost::cmatch ref;
+//	std::stringstream stream;
+//	std::string name = path.substr(path.find_last_of('/') + 1);
+//    if(!boost::regex_match(name.c_str(), ref, PATTERN))
+//        return false;
+//	stream << ref[1];
+//	stream >> x;
+//	stream.clear();
+//	stream << ref[2];
+//	stream >> z;
+//	return true;
 }
 
 /*

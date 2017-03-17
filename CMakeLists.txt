@@ -54,26 +54,20 @@ SET(CMAKE_CXX_FLAGS_DEBUG "-g -msse3 -DNDEBUG")
 #----------------------------------------------------------------------
 # Options
 #----------------------------------------------------------------------
-option(BUILD_TESTS "Include unit tests and sample programs." ON)
 option(USE_OPENGL "Use OpenGL" ON)
-find_package(GLFW)
-message("This is a test")
-message(${GLFW_INCLUDE_DIR})
 
 #----------------------------------------------------------------------
 # GL
 #----------------------------------------------------------------------
-if (USE_OPENGL)
-    find_package(GLUT)
-    find_package(OpenGL)
-    find_package(GLFW)
-    find_package(PNG)
-    message(${GLFW_INCLUDE_DIR})
-    set(EXTERN_LIBS ${EXTERN_LIBS} ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${GLM_LIBRARY} ${GLFW_LIBRARY})
-    set(EXTERN_LIBS ${EXTERN_LIBS} ${PNG_LIBRARY})
-    set(EXTERN_LIBS ${EXTERN_LIBS} -lGLEW -lpng -lz -lboost_regex)
-    INCLUDE_DIRECTORIES(${GLFW_INCLUDE_DIR})
-endif(USE_OPENGL)
+find_package(GLUT)
+find_package(OpenGL)
+find_package(GLFW)
+find_package(PNG)
+message(${GLFW_INCLUDE_DIR})
+set(EXTERN_LIBS ${EXTERN_LIBS} ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${GLM_LIBRARY} ${GLFW_LIBRARY})
+set(EXTERN_LIBS ${EXTERN_LIBS} ${PNG_LIBRARY})
+set(EXTERN_LIBS ${EXTERN_LIBS} -lGLEW -lpng -lz)
+INCLUDE_DIRECTORIES(${GLFW_INCLUDE_DIR})
 
 
 
